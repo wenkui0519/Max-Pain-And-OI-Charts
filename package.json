@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "express": "^5.1.0",
+    "mathjs": "^14.6.0",
+    "multer": "^2.0.2",
+    "xlsx": "^0.18.5"
+  }
+}

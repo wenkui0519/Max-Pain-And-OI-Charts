@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Max Pain 计算器</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .result-visible {
+            display: block !important;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            min-width: 400px;
+            min-height: 800px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        #callChart,
+        #putChart {
+            min-width: 400px;
+            height: 100%;
+            min-height: 780px;
+        }
+
+        .summary-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            background-color: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #555;
+        }
+
+        .card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Max Pain 计算器</h1>
+        <div class="upload-area">
+            <h2>上传Excel文件</h2>
+            <p>文件应包含两个工作表："call" 和 "put"</p>
+            <p>call工作表应包含列: Strike, Total Volume, At Close, Change</p>
+            <p>put工作表应包含列: Strike, Total Volume, At Close, Change</p>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" id="fileInput" name="file" accept=".xlsx, .xls" required>
+                <br>
+                <button type="submit">计算 Max Pain 并可视化 OI</button>
+            </form>
+        </div>
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>正在处理文件，请稍候...</p>
+        </div>
+        <div id="result">
+            <div id="summary">
+                <h2>计算结果</h2>
+                <div class="summary-cards">
+                    <div class="card">
+                        <h3>Max Pain 执行价</h3>
+                        <div class="value" id="maxPainStrike">-</div>
+                    </div>
+                    <div class="card">
+                        <h3>总亏损</h3>
+                        <div class="value" id="totalPain">-</div>
+                    </div>
+                    <div class="card">
+                        <h3>共有Strike数量</h3>
+                        <div class="value" id="totalStrikes">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <h3>Call 期权数据</h3>
+                    <div id="callChart" style="width:100%; height:100%;"></div>
+                </div>
+                <div class="chart-wrapper">
+                    <h3>Put 期权数据</h3>
+                    <div id="putChart" style="width:100%; height:100%;"></div>
+                </div>
+            </div>
+
+            <!-- <div id="dataTable">
+                <h3>共有Strike数据</h3>
+                <table id="strikeTable">
+                    <thead>
+                        <tr>
+                            <th>Strike</th>
+                            <th>Call_OI</th>
+                            <th>Put_OI</th>
+                            <th>Call_Volume</th>
+                            <th>Put_Volume</th>
+                            <th>Call_Change</th>
+                            <th>Put_Change</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div> -->
+        </div>
+        <div id="error" class="error hidden"></div>
+    </div>
+
+    <script>
+        // 初始化ECharts实例
+        let callChart = echarts.init(document.getElementById('callChart'));
+        let putChart = echarts.init(document.getElementById('putChart'));
+
+        // 窗口大小改变时重置图表大小
+        window.addEventListener('resize', function () {
+            setTimeout(() => {
+                callChart.resize();
+                putChart.resize();
+            }, 100);
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+
+            // 隐藏结果和错误信息，显示加载状态
+            resultDiv.classList.remove('result-visible');
+            errorDiv.classList.add('hidden');
+            loadingDiv.classList.remove('hidden');
+
+            if (!fileInput.files[0]) {
+                showError('请选择一个文件');
+                loadingDiv.classList.add('hidden');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/calculate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // 显示结果
+                    displayResults(data);
+                    resultDiv.classList.add('result-visible');
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                showError('请求失败: ' + error.message);
+            } finally {
+                loadingDiv.classList.add('hidden');
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function displayResults(data) {
+            // 显示摘要信息
+            document.getElementById('maxPainStrike').textContent = data.maxPain.strike;
+            document.getElementById('totalPain').textContent = data.maxPain.pain.toFixed(2);
+            document.getElementById('totalStrikes').textContent = data.summary.totalCommonStrikes;
+
+            // 绘制图表
+            drawCharts(data.commonStrikes);
+
+            // 填充表格数据
+            // populateTable(data.commonStrikes);
+        }
+
+        function drawCharts(data) {
+            // 准备Call图表数据
+            const callStrikes = data.map(item => item.Strike);
+            const callOI = data.map(item => item.Call_OI);
+            const callChange = data.map(item => item.Call_Change);
+
+            // Call图表配置
+            const callOption = {
+                // backgroundColor: '#1a1a1a', // 设置背景颜色为深色
+                color: ['#5470c6', 'red'], // 存量蓝色、变动红色
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderColor: '#ccc',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                legend: {
+                    data: ['存量', '变动'],
+                    top: '5%',
+                    right: '10%', // 将图例移动到右侧
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#333' // 图例文字颜色为白色
+                    }
+                },
+                grid: {
+                    left: '10%',
+                    right: '10%',
+                    bottom: '15%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'value',
+                        name: '存量',
+                        min: 0,
+                        max: 8000,
+                        position: 'top',
+                        nameTextStyle: {
+                            color: '#333',
+                        },
+                        splitLine: { show: false }
+                    }, {
+                        type: 'value',
+                        name: '变动',
+                        nameLocation: 'middle',
+                        nameGap: 30,
+                        position: 'bottom',
+                        nameTextStyle: {
+                            color: '#333',
+                        },
+                        axisLabel: {
+                            formatter: '{value}',
+                            color: '#333' // x轴标签颜色为白色
+                        },
+                        min: -600,
+                        max: 600,
+                        axisLine: {
+                            lineStyle: {
+                                color: '#444' // x轴线颜色为浅灰色
+                            }
+                        }
+                    }
+                ],
+                yAxis: {
+                    type: 'category',
+                    data: callStrikes,
+                    axisLabel: {
+                        rotate: 0,
+                        fontSize: 10,
+                        color: '#333', // y轴标签颜色为白色
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#444' // y轴线颜色为浅灰色
+                        }
+                    },
+                    nameTextStyle: {
+                        color: '#333'
+                    }
+                },
+                series: [
+                    {
+                        name: '存量',
+                        type: 'line',
+                        data: callOI,
+                        smooth: true,
+                        showSymbol: false,
+                        xAxisIndex: 0,
+                        lineStyle: {
+                            width: 2,
+                            color: '#5470c6' // 存量线条颜色为蓝色
+                        }
+                    },
+                    {
+                        name: '变动',
+                        type: 'bar',
+                        data: callChange,
+                        barWidth: '60%',
+                        xAxisIndex: 1,
+                        itemStyle: {
+                            color: 'red' // 变动柱状图颜色为红色
+                        }
+                    }
+                ]
+            };
+
+            // 准备Put图表数据
+            const putStrikes = data.map(item => item.Strike);
+            const putOI = data.map(item => item.Put_OI);
+            const putChange = data.map(item => item.Put_Change);
+
+            // Put图表配置
+            const putOption = {
+                // backgroundColor: '#1a1a1a', // 设置背景颜色为深色
+                color: ['#5470c6', 'red'], // 存量蓝色、变动红色
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderColor: '#ccc',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                legend: {
+                    data: ['存量', '变动'],
+                    top: '5%',
+                    right: '10%', // 将图例移动到右侧
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#333' // 图例文字颜色为白色
+                    }
+                },
+                grid: {
+                    left: '10%',
+                    right: '10%',
+                    bottom: '15%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'value',
+                        name: '存量',
+                        min: 0,
+                        max: 8000,
+                        position: 'top',
+                        nameTextStyle: {
+                            color: '#333',
+                        },
+                        splitLine: { show: false }
+                    }, {
+                        type: 'value',
+                        name: '变动',
+                        nameLocation: 'middle',
+                        nameGap: 30,
+                        position: 'bottom',
+                        nameTextStyle: {
+                            color: '#333',
+                        },
+                        axisLabel: {
+                            formatter: '{value}',
+                            color: '#333' // x轴标签颜色为白色
+                        },
+                        min: -600,
+                        max: 600,
+                        axisLine: {
+                            lineStyle: {
+                                color: '#444' // x轴线颜色为浅灰色
+                            }
+                        }
+                    }
+                ],
+                yAxis: {
+                    type: 'category',
+                    data: putStrikes,
+                    axisLabel: {
+                        rotate: 0,
+                        fontSize: 10,
+                        color: '#333' // y轴标签颜色为白色
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#444' // y轴线颜色为浅灰色
+                        }
+                    },
+                    nameTextStyle: {
+                        color: '#333'
+                    }
+                },
+                series: [
+                    {
+                        name: '存量',
+                        type: 'line',
+                        data: putOI,
+                        smooth: true,
+                        showSymbol: false,
+                        xAxisIndex: 0,
+                        lineStyle: {
+                            width: 2,
+                            color: '#5470c6' // 存量线条颜色为蓝色
+                        }
+                    },
+                    {
+                        name: '变动',
+                        type: 'bar',
+                        data: putChange,
+                        barWidth: '60%',
+                        xAxisIndex: 1,
+                        itemStyle: {
+                            color: 'red' // 变动柱状图颜色为红色
+                        }
+                    }
+                ]
+            };
+
+            // 渲染图表
+            callChart.setOption(callOption, true);
+            putChart.setOption(putOption, true);
+
+            // 移除之前的事件监听器，防止重复绑定
+            callChart.off('updateAxisPointer');
+            putChart.off('updateAxisPointer');
+
+            // 实现图表联动功能 - 使用updateAxisPointer事件以确保更好的同步性
+            let isDispatching = false; // 防止循环触发的标志位
+
+            callChart.on('updateAxisPointer', function (params) {
+                // 防止循环触发
+                if (isDispatching) return;
+
+                try {
+                    isDispatching = true;
+                    // 检查参数有效性
+                    if (params && params.axesInfo && params.axesInfo.length > 0) {
+                        // 获取y轴的值（执行价）
+                        const yAxisInfo = params.axesInfo.find(axis => axis.axisDim === 'y');
+                        if (yAxisInfo && yAxisInfo.value != null) {
+                            // 在putChart中显示对应的提示
+                            putChart.dispatchAction({
+                                type: 'showTip',
+                                seriesIndex: 0,
+                                dataIndex: yAxisInfo.value
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error in callChart updateAxisPointer:', e);
+                } finally {
+                    // 使用setTimeout确保异步重置标志位
+                    setTimeout(() => {
+                        isDispatching = false;
+                    }, 0);
+                }
+            });
+
+            putChart.on('updateAxisPointer', function (params) {
+                // 防止循环触发
+                if (isDispatching) return;
+
+                try {
+                    isDispatching = true;
+                    // 检查参数有效性
+                    if (params && params.axesInfo && params.axesInfo.length > 0) {
+                        // 获取y轴的值（执行价）
+                        const yAxisInfo = params.axesInfo.find(axis => axis.axisDim === 'y');
+                        if (yAxisInfo && yAxisInfo.value != null) {
+                            // 在callChart中显示对应的提示
+                            callChart.dispatchAction({
+                                type: 'showTip',
+                                seriesIndex: 0,
+                                dataIndex: yAxisInfo.value
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error in putChart updateAxisPointer:', e);
+                } finally {
+                    // 使用setTimeout确保异步重置标志位
+                    setTimeout(() => {
+                        isDispatching = false;
+                    }, 0);
+                }
+            });
+
+            // 确保图表在渲染后正确调整大小并保持高度一致
+            setTimeout(() => {
+                // 先获取容器宽度
+                const chartWidth = document.querySelector('.chart-wrapper').clientWidth;
+
+                // 设置固定高度（基于最小容器高度）
+                const chartHeight = Math.min(
+                    document.getElementById('callChart').parentElement.clientHeight,
+                    document.getElementById('putChart').parentElement.clientHeight
+                );
+
+                // 为两个图表设置相同的尺寸
+                callChart.resize({ width: chartWidth, height: chartHeight });
+                putChart.resize({ width: chartWidth, height: chartHeight });
+            }, 100);
+        }
+
+        // function populateTable(data) {
+        //     const tbody = document.querySelector('#strikeTable tbody');
+        //     tbody.innerHTML = '';
+
+        //     data.forEach(item => {
+        //         const row = document.createElement('tr');
+        //         row.innerHTML = `
+        //             <td>${item.Strike}</td>
+        //             <td>${item.Call_OI}</td>
+        //             <td>${item.Put_OI}</td>
+        //             <td>${item.Call_Volume}</td>
+        //             <td>${item.Put_Volume}</td>
+        //             <td>${item.Call_Change}</td>
+        //             <td>${item.Put_Change}</td>
+        //         `;
+        //         tbody.appendChild(row);
+        //     });
+        // }
+    </script>
+</body>
+
+</html>
