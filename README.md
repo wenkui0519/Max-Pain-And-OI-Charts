@@ -22,17 +22,15 @@ npm install
 Excel文件必须包含两个工作表：
 1. **call** 工作表，包含以下列：
    - Strike（执行价）
-   - Call_Volume（看涨期权成交量）
-   - Call_OI（看涨期权未平仓合约数）
-   - Call_Change（看涨期权变化）
+   - Total Volume（成交量）
+   - At Close（未平仓合约数）
+   - Change（变化）
 
 2. **put** 工作表，包含以下列：
    - Strike（执行价）
-   - Put_Volume（看跌期权成交量）
-   - Put_OI（看跌期权未平仓合约数）
-   - Put_Change（看跌期权变化）
-
-注意：程序只会处理在两个工作表中都存在的执行价（Strike）数据。
+   - Total Volume（成交量）
+   - At Close（未平仓合约数）
+   - Change（变化）
 
 ## 使用方法
 
