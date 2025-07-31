@@ -41,7 +41,7 @@ function calculateMaxPainFromExcel(filePath) {
  * @param {Array} data - 包含期权数据的数组
  * @returns {Object} 包含Max Pain和中性价值的结果对象
  */
-function calculateMaxPain(callData, putData) {
+function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike = 4000) {
   // 验证数据
   if (!callData || callData.length === 0) {
     throw new Error('没有提供看涨期权数据');
@@ -96,10 +96,10 @@ function calculateMaxPain(callData, putData) {
   }
 
   let commonStrikes = [];
-  // 只处理3000-4000范围内的call strike，用于commonStrikes显示
+  // 只处理指定范围内的call strike，用于commonStrikes显示
   for (const [strike, callItem] of callStrikeMap) {
-    // 检查strike是否在3000-4000范围内
-    if (strike >= 3000 && strike <= 4000) {
+    // 检查strike是否在指定范围内
+    if (strike >= minStrike && strike <= maxStrike) {
       commonStrikes.push({
         Strike: strike,
         Call_Volume: callItem[keyMap.volume] || 0,
@@ -115,7 +115,7 @@ function calculateMaxPain(callData, putData) {
   if (allStrikesData.length === 0) {
     throw new Error('没有找到任何执行价');
   }
-
+  // 所有执行价，用于图表
   const strikes = commonStrikes.sort((a, b) => a.Strike - b.Strike);
 
   // 按执行价排序
@@ -183,7 +183,7 @@ function calculateMaxPain(callData, putData) {
   return {
     maxPain: {
       strike: maxPainPoint.strike,
-      pain: Number(maxPainPoint.pain)
+      pain: Number(maxPainPoint.pain) // 最大痛苦价值
     },
     painPoints: painPoints,
     summary: {
@@ -192,7 +192,7 @@ function calculateMaxPain(callData, putData) {
       totalOI: totalOI,
       totalCommonStrikes: commonStrikes.length
     },
-    commonStrikes: strikes
+    commonStrikes: strikes // 图表数据
   };
 }
 

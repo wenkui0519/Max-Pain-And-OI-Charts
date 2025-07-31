@@ -37,6 +37,22 @@
             background-color: #fafafa;
         }
 
+        .form-group {
+            margin: 15px 0;
+        }
+
+        .form-group label {
+            display: inline-block;
+            width: 200px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .form-group input {
+            padding: 5px;
+            width: 100px;
+        }
+
         input[type="file"] {
             margin: 10px 0;
         }
@@ -194,6 +210,19 @@
             <form id="uploadForm" enctype="multipart/form-data">
                 <input type="file" id="fileInput" name="file" accept=".xlsx, .xls" required>
                 <br>
+                <div class="form-group">
+                    <label for="minStrike">最小执行价:</label>
+                    <input type="number" id="minStrike" name="minStrike" value="3000">
+                </div>
+                <div class="form-group">
+                    <label for="maxStrike">最大执行价:</label>
+                    <input type="number" id="maxStrike" name="maxStrike" value="4000">
+                </div>
+                <div class="form-group">
+                    <label for="priceAdjustment">期货现货差额:</label>
+                    <input type="number" id="priceAdjustment" name="priceAdjustment" value="0" step="0.01">
+                </div>
+                <br>
                 <button type="submit">计算 Max Pain 并可视化 OI</button>
             </form>
         </div>
@@ -270,6 +299,9 @@
             e.preventDefault();
 
             const fileInput = document.getElementById('fileInput');
+            const minStrikeInput = document.getElementById('minStrike');
+            const maxStrikeInput = document.getElementById('maxStrike');
+            const priceAdjustmentInput = document.getElementById('priceAdjustment');
             const resultDiv = document.getElementById('result');
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
@@ -287,6 +319,9 @@
 
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
+            formData.append('minStrike', minStrikeInput.value);
+            formData.append('maxStrike', maxStrikeInput.value);
+            formData.append('priceAdjustment', priceAdjustmentInput.value);
 
             try {
                 const response = await fetch('/calculate', {
@@ -330,8 +365,11 @@
         }
 
         function drawCharts(data) {
-            // 准备Call图表数据
-            const callStrikes = data.map(item => item.Strike);
+            // 获取价格调整值
+            const priceAdjustment = parseFloat(document.getElementById('priceAdjustment').value) || 0;
+            
+            // 准备Call图表数据，并应用价格调整
+            const callStrikes = data.map(item => item.Strike - priceAdjustment);
             const callOI = data.map(item => item.Call_OI);
             const callChange = data.map(item => item.Call_Change);
 
@@ -440,8 +478,8 @@
                 ]
             };
 
-            // 准备Put图表数据
-            const putStrikes = data.map(item => item.Strike);
+            // 准备Put图表数据，并应用价格调整
+            const putStrikes = data.map(item => item.Strike - priceAdjustment);
             const putOI = data.map(item => item.Put_OI);
             const putChange = data.map(item => item.Put_Change);
 

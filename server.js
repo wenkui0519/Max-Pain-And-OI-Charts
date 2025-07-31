@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { calculateMaxPainFromExcel } = require('./calculateMaxPain');
+const XLSX = require('xlsx');
 
 const app = express();
 const port = 3000;
@@ -30,6 +30,7 @@ app.use('/uploads', express.static('uploads'));
 
 // 解析JSON请求体
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // 主页路由
 app.get('/', (req, res) => {
@@ -43,13 +44,45 @@ app.post('/calculate', upload.single('file'), (req, res) => {
   }
   
   try {
-    const result = calculateMaxPainFromExcel(req.file.path);
+    // 读取Excel文件
+    const workbook = XLSX.readFile(req.file.path);
+    
+    // 获取所有工作表名称
+    const sheetNames = workbook.SheetNames;
+    
+    // 检查是否包含Call和Put工作表
+    if (!sheetNames.includes('call') || !sheetNames.includes('put')) {
+      throw new Error('Excel文件必须包含名为"call"和"put"的工作表');
+    }
+    
+    // 读取Call数据
+    const callWorksheet = workbook.Sheets['call'];
+    const callData = XLSX.utils.sheet_to_json(callWorksheet);
+    
+    // 读取Put数据
+    const putWorksheet = workbook.Sheets['put'];
+    const putData = XLSX.utils.sheet_to_json(putWorksheet);
+    
+    // 获取用户输入的参数
+    const minStrike = req.body.minStrike ? parseFloat(req.body.minStrike) : 3000;
+    const maxStrike = req.body.maxStrike ? parseFloat(req.body.maxStrike) : 4000;
+    
+    // 导入计算函数
+    const { calculateMaxPain } = require('./calculateMaxPain');
+    
+    // 计算结果
+    const result = calculateMaxPain(callData, putData, minStrike, maxStrike);
+    
     // 删除上传的文件
     fs.unlinkSync(req.file.path);
     res.json(result);
   } catch (error) {
     // 删除上传的文件
-    fs.unlinkSync(req.file.path);
+    try {
+      fs.unlinkSync(req.file.path);
+    } catch (e) {
+      // 忽略删除文件时的错误
+    }
     res.status(500).json({ error: error.message });
   }
 });
