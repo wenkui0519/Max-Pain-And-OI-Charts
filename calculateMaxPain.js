@@ -1,47 +1,9 @@
-const XLSX = require('xlsx');
-
-/**
- * 从Excel文件读取期权数据并计算Max Pain和中性价值
- * @param {string} filePath - Excel文件路径
- * @param {string} sheetName - 工作表名称（可选）
- */
-function calculateMaxPainFromExcel(filePath) {
-  try {
-    // 读取Excel文件
-    const workbook = XLSX.readFile(filePath);
-
-    // 获取所有工作表名称
-    const sheetNames = workbook.SheetNames;
-
-    // 检查是否包含Call和Put工作表
-    if (!sheetNames.includes('call') || !sheetNames.includes('put')) {
-      throw new Error('Excel文件必须包含名为"call"和"put"的工作表');
-    }
-
-    // 读取Call数据
-    const callWorksheet = workbook.Sheets['call'];
-    const callData = XLSX.utils.sheet_to_json(callWorksheet);
-
-    // 读取Put数据
-    const putWorksheet = workbook.Sheets['put'];
-    const putData = XLSX.utils.sheet_to_json(putWorksheet);
-
-    // 处理数据并计算Max Pain
-    const result = calculateMaxPain(callData, putData);
-
-    return result;
-  } catch (error) {
-    console.error('处理Excel文件时出错:', error);
-    throw error;
-  }
-}
-
 /**
  * 计算Max Pain和中性价值
  * @param {Array} data - 包含期权数据的数组
  * @returns {Object} 包含Max Pain和中性价值的结果对象
  */
-function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike = 4000) {
+export function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike = 4000) {
   // 验证数据
   if (!callData || callData.length === 0) {
     throw new Error('没有提供看涨期权数据');
@@ -94,29 +56,9 @@ function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike = 4000)
       Put_Change: putStrikeMap.has(strike) ? putStrikeMap.get(strike)[keyMap.change] || 0 : 0
     });
   }
-
-  let commonStrikes = [];
-  // 只处理指定范围内的call strike，用于commonStrikes显示
-  for (const [strike, callItem] of callStrikeMap) {
-    // 检查strike是否在指定范围内
-    if (strike >= minStrike && strike <= maxStrike) {
-      commonStrikes.push({
-        Strike: strike,
-        Call_Volume: callItem[keyMap.volume] || 0,
-        Call_OI: callItem[keyMap.oi] || 0,
-        Call_Change: callItem[keyMap.change] || 0,
-        Put_Volume: putStrikeMap.has(strike) ? putStrikeMap.get(strike)[keyMap.volume] || 0 : 0,
-        Put_OI: putStrikeMap.has(strike) ? putStrikeMap.get(strike)[keyMap.oi] || 0 : 0,
-        Put_Change: putStrikeMap.has(strike) ? putStrikeMap.get(strike)[keyMap.change] || 0 : 0
-      });
-    }
-  }
-
   if (allStrikesData.length === 0) {
     throw new Error('没有找到任何执行价');
   }
-  // 所有执行价，用于图表
-  const strikes = commonStrikes.sort((a, b) => a.Strike - b.Strike);
 
   // 按执行价排序
   const sortedData = allStrikesData.sort((a, b) => a.Strike - b.Strike);
@@ -180,6 +122,26 @@ function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike = 4000)
     totalOI += oi;
   }
 
+  // 获取指定范围内的strike
+  let commonStrikes = [];
+  // 只处理指定范围内的call strike，用于commonStrikes显示
+  for (const [strike, callItem] of callStrikeMap) {
+    // 检查strike是否在指定范围内
+    if (strike >= minStrike && strike <= maxStrike) {
+      commonStrikes.push({
+        Strike: strike,
+        Call_Volume: callItem[keyMap.volume] || 0,
+        Call_OI: callItem[keyMap.oi] || 0,
+        Call_Change: callItem[keyMap.change] || 0,
+        Put_Volume: putStrikeMap.has(strike) ? putStrikeMap.get(strike)[keyMap.volume] || 0 : 0,
+        Put_OI: putStrikeMap.has(strike) ? putStrikeMap.get(strike)[keyMap.oi] || 0 : 0,
+        Put_Change: putStrikeMap.has(strike) ? putStrikeMap.get(strike)[keyMap.change] || 0 : 0
+      });
+    }
+  }
+  // 所有执行价，用于图表
+  const strikes = commonStrikes.sort((a, b) => a.Strike - b.Strike);
+
   return {
     maxPain: {
       strike: maxPainPoint.strike,
@@ -195,9 +157,3 @@ function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike = 4000)
     commonStrikes: strikes // 图表数据
   };
 }
-
-// 导出函数
-module.exports = {
-  calculateMaxPainFromExcel,
-  calculateMaxPain,
-};

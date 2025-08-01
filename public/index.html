@@ -259,25 +259,6 @@
                     <div id="putChart" style="width:100%; height:100%;"></div>
                 </div>
             </div>
-
-            <!-- <div id="dataTable">
-                <h3>共有Strike数据</h3>
-                <table id="strikeTable">
-                    <thead>
-                        <tr>
-                            <th>Strike</th>
-                            <th>Call_OI</th>
-                            <th>Put_OI</th>
-                            <th>Call_Volume</th>
-                            <th>Put_Volume</th>
-                            <th>Call_Change</th>
-                            <th>Put_Change</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div> -->
         </div>
         <div id="error" class="error hidden"></div>
     </div>
@@ -359,9 +340,6 @@
 
             // 绘制图表
             drawCharts(data.commonStrikes);
-
-            // 填充表格数据
-            // populateTable(data.commonStrikes);
         }
 
         function drawCharts(data) {
@@ -674,24 +652,6 @@
             }, 100);
         }
 
-        // function populateTable(data) {
-        //     const tbody = document.querySelector('#strikeTable tbody');
-        //     tbody.innerHTML = '';
-
-        //     data.forEach(item => {
-        //         const row = document.createElement('tr');
-        //         row.innerHTML = `
-        //             <td>${item.Strike}</td>
-        //             <td>${item.Call_OI}</td>
-        //             <td>${item.Put_OI}</td>
-        //             <td>${item.Call_Volume}</td>
-        //             <td>${item.Put_Volume}</td>
-        //             <td>${item.Call_Change}</td>
-        //             <td>${item.Put_Change}</td>
-        //         `;
-        //         tbody.appendChild(row);
-        //     });
-        // }
     </script>
 </body>
 
