@@ -18,18 +18,7 @@ npm install
 
 ## Excel文件结构
 
-Excel文件必须包含两个工作表：
-1. **call** 工作表，包含以下列：
-   - Strike（执行价）
-   - Total Volume（成交量）
-   - At Close（未平仓合约数）
-   - Change（变化）
-
-2. **put** 工作表，包含以下列：
-   - Strike（执行价）
-   - Total Volume（成交量）
-   - At Close（未平仓合约数）
-   - Change（变化）
+Excel文件从标题超链接下载
 
 ## 使用方法
 
@@ -48,14 +37,7 @@ node server.js
 你也可以在自己的代码中使用这个模块：
 
 ```javascript
-const { calculateMaxPainFromExcel, createSampleExcel } = require('./calculateMaxPain');
-
-// 创建示例Excel文件
-createSampleExcel('my_options_data.xlsx');
-
-// 从Excel文件计算Max Pain
-const result = calculateMaxPainFromExcel('my_options_data.xlsx');
-console.log('Max Pain:', result.maxPain);
+const { calculateMaxPain } = require('./calculateMaxPain');
 ```
 
 ## Max Pain理论
@@ -69,12 +51,11 @@ Max Pain理论认为，期权到期时，标的资产的价格会趋向于使期
 ## 技术栈
 
 - Node.js
-- Express.js（Web服务器）
-- xlsx（处理Excel文件）
-- mathjs（数学计算）
+- Express.js
+- xlsx
+- ECharts
 
 ## 文件说明
 
 - `calculateMaxPain.js` - 核心计算逻辑
-- `server.js` - Web服务器
-- `package.json` - 项目依赖
+- `server.js` - Web服务器、文件解析
