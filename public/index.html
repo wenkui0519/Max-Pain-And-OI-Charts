@@ -22,6 +22,11 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
+        .link-title a {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         h1 {
             color: #333;
             text-align: center;
@@ -29,43 +34,62 @@
         }
 
         .upload-area {
-            border: 2px dashed #ccc;
+            border: 1px solid #ddd;
             padding: 20px;
-            text-align: center;
             margin: 20px 0;
             border-radius: 5px;
             background-color: #fafafa;
         }
 
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
         .form-group {
-            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            margin: 0;
         }
 
         .form-group label {
             display: inline-block;
-            width: 200px;
-            text-align: right;
-            margin-right: 10px;
+            width: auto;
+            text-align: left;
+            margin-right: 8px;
+            font-size: 14px;
+            color: #555;
+            white-space: nowrap;
         }
 
-        .form-group input {
-            padding: 5px;
-            width: 100px;
+        .form-group input,
+        .form-group select {
+            padding: 6px 8px;
+            width: auto;
+            min-width: 80px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
         }
 
         input[type="file"] {
             margin: 10px 0;
+            width: 100%;
         }
 
         button {
             background-color: #4CAF50;
             color: white;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             transition: background-color 0.3s;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -78,10 +102,13 @@
         }
 
         #result {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 20px;
             border-radius: 5px;
             display: none;
+            background-color: #fff;
+            border: 1px solid #e1e1e1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .result-visible {
@@ -96,37 +123,39 @@
             border-collapse: collapse;
             width: 100%;
             margin-top: 20px;
+            font-size: 14px;
         }
 
         th,
         td {
-            border: 1px solid #ddd;
-            padding: 12px;
+            border: 1px solid #eee;
+            padding: 10px 8px;
             text-align: left;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #f8f9fa;
+            font-weight: 600;
         }
 
         tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #fafafa;
         }
 
         .charts-container {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
         .chart-wrapper {
             flex: 1;
-            min-width: 400px;
-            min-height: 800px;
+            min-width: 300px;
             border: 1px solid #eee;
             border-radius: 5px;
-            padding: 10px;
+            /* padding: 15px; */
+            background-color: #fff;
         }
 
         #callChart,
@@ -136,32 +165,23 @@
             min-height: 780px;
         }
 
-        .summary-cards {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .card {
-            flex: 1;
-            min-width: 200px;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: center;
-            background-color: #f8f9fa;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .card h3 {
-            margin-top: 0;
+        .summary-label {
             color: #555;
+            font-size: 18px;
+            font-weight: bold;
         }
 
-        .card .value {
-            font-size: 24px;
+        .summary-value {
+            font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
+            margin-left: 10px;
+        }
+
+        .chart-header {
+            margin: 0;
+            color: #444;
+            padding: 15px;
         }
 
         .loading {
@@ -190,40 +210,51 @@
         }
 
         .error {
-            background-color: #ffebee;
-            color: #c62828;
+            background-color: #fff5f5;
+            color: #c53030;
             padding: 15px;
             border-radius: 5px;
             margin: 10px 0;
+            border: 1px solid #fed7d7;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>Max Pain 计算器</h1>
         <div class="upload-area">
-            <h2>上传Excel文件</h2>
-            <p>文件应包含两个工作表："call" 和 "put"</p>
-            <p>call工作表应包含列: Strike, Total Volume, At Close, Change</p>
-            <p>put工作表应包含列: Strike, Total Volume, At Close, Change</p>
+            <h2 class="link-title">
+                Link:
+                <a href="https://www.cmegroup.com/markets/metals/precious/gold.volume.options.html">
+                    CME Group Gold Volume
+                </a>
+            </h2>
             <form id="uploadForm" enctype="multipart/form-data">
                 <input type="file" id="fileInput" name="file" accept=".xlsx, .xls" required>
-                <br>
-                <div class="form-group">
-                    <label for="minStrike">最小执行价:</label>
-                    <input type="number" id="minStrike" name="minStrike" value="3000">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="minStrike">最小执行价:</label>
+                        <input type="number" id="minStrike" name="minStrike" value="3000">
+                    </div>
+                    <div class="form-group">
+                        <label for="maxStrike">最大执行价:</label>
+                        <input type="number" id="maxStrike" name="maxStrike" value="4000">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="maxStrike">最大执行价:</label>
-                    <input type="number" id="maxStrike" name="maxStrike" value="4000">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="priceAdjustment">期货现货差额:</label>
+                        <input type="number" id="priceAdjustment" name="priceAdjustment" value="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="selectedMonth">选择月份:</label>
+                        <select id="selectedMonth" name="selectedMonth"></select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="priceAdjustment">期货现货差额:</label>
-                    <input type="number" id="priceAdjustment" name="priceAdjustment" value="0" step="0.01">
-                </div>
-                <br>
-                <button type="submit">计算 Max Pain 并可视化 OI</button>
+
+                <button type="submit">计算MaxPain并可视化OI</button>
             </form>
         </div>
         <div id="loading" class="loading hidden">
@@ -232,30 +263,17 @@
         </div>
         <div id="result">
             <div id="summary">
-                <h2>计算结果</h2>
-                <div class="summary-cards">
-                    <div class="card">
-                        <h3>Max Pain 执行价</h3>
-                        <div class="value" id="maxPainStrike">-</div>
-                    </div>
-                    <div class="card">
-                        <h3>总亏损</h3>
-                        <div class="value" id="totalPain">-</div>
-                    </div>
-                    <div class="card">
-                        <h3>共有Strike数量</h3>
-                        <div class="value" id="totalStrikes">-</div>
-                    </div>
-                </div>
+                <span class="summary-label">Max Pain 执行价:</span>
+                <span id="maxPainStrike" class="summary-value">-</span>
             </div>
 
             <div class="charts-container">
                 <div class="chart-wrapper">
-                    <h3>Call 期权数据</h3>
+                    <h3 class="chart-header">Call 期权数据</h3>
                     <div id="callChart" style="width:100%; height:100%;"></div>
                 </div>
                 <div class="chart-wrapper">
-                    <h3>Put 期权数据</h3>
+                    <h3 class="chart-header">Put 期权数据</h3>
                     <div id="putChart" style="width:100%; height:100%;"></div>
                 </div>
             </div>
@@ -267,6 +285,9 @@
         // 初始化ECharts实例
         let callChart = echarts.init(document.getElementById('callChart'));
         let putChart = echarts.init(document.getElementById('putChart'));
+
+        // 存储从服务器获取的数据
+        let serverData = null;
 
         // 窗口大小改变时重置图表大小
         window.addEventListener('resize', function () {
@@ -283,6 +304,7 @@
             const minStrikeInput = document.getElementById('minStrike');
             const maxStrikeInput = document.getElementById('maxStrike');
             const priceAdjustmentInput = document.getElementById('priceAdjustment');
+            const selectedMonthInput = document.getElementById('selectedMonth');
             const resultDiv = document.getElementById('result');
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
@@ -303,6 +325,7 @@
             formData.append('minStrike', minStrikeInput.value);
             formData.append('maxStrike', maxStrikeInput.value);
             formData.append('priceAdjustment', priceAdjustmentInput.value);
+            formData.append('selectedMonth', selectedMonthInput.value);
 
             try {
                 const response = await fetch('/calculate', {
@@ -313,8 +336,73 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    // 保存服务器数据
+                    serverData = data;
+
+                    // 更新月份选择下拉框
+                    updateMonthSelect(data.availableMonths, data.selectedMonth);
+
                     // 显示结果
                     displayResults(data);
+                    resultDiv.classList.add('result-visible');
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                showError('请求失败: ' + error.message);
+            } finally {
+                loadingDiv.classList.add('hidden');
+            }
+        });
+
+        // 月份选择变化事件
+        document.getElementById('selectedMonth').addEventListener('change', async function (e) {
+            if (!serverData) return;
+
+            const selectedMonth = e.target.value;
+            const minStrikeInput = document.getElementById('minStrike');
+            const maxStrikeInput = document.getElementById('maxStrike');
+            const priceAdjustmentInput = document.getElementById('priceAdjustment');
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+
+            // 隐藏结果和错误信息，显示加载状态
+            resultDiv.classList.remove('result-visible');
+            errorDiv.classList.add('hidden');
+            loadingDiv.classList.remove('hidden');
+
+            try {
+                // 发送请求计算选中月份的数据，但不重新解析文件
+                const formData = new FormData();
+                formData.append('sessionId', serverData.sessionId);
+                formData.append('selectedMonth', selectedMonth);
+                formData.append('minStrike', minStrikeInput.value);
+                formData.append('maxStrike', maxStrikeInput.value);
+
+                const response = await fetch('/calculate-month', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        sessionId: serverData.sessionId,
+                        selectedMonth: selectedMonth,
+                        minStrike: minStrikeInput.value,
+                        maxStrike: maxStrikeInput.value
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // 更新选中月份
+                    serverData.selectedMonth = selectedMonth;
+                    serverData.maxPain = data.maxPain;
+                    serverData.commonStrikes = data.commonStrikes;
+
+                    // 显示结果
+                    displayResults(serverData);
                     resultDiv.classList.add('result-visible');
                 } else {
                     showError(data.error);
@@ -332,11 +420,24 @@
             errorDiv.classList.remove('hidden');
         }
 
+        function updateMonthSelect(availableMonths, selectedMonth) {
+            const selectElement = document.getElementById('selectedMonth');
+            selectElement.innerHTML = '';
+
+            availableMonths.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = month;
+                if (month === selectedMonth) {
+                    option.selected = true;
+                }
+                selectElement.appendChild(option);
+            });
+        }
+
         function displayResults(data) {
             // 显示摘要信息
             document.getElementById('maxPainStrike').textContent = data.maxPain.strike;
-            document.getElementById('totalPain').textContent = data.maxPain.pain.toFixed(2);
-            document.getElementById('totalStrikes').textContent = data.summary.totalCommonStrikes;
 
             // 绘制图表
             drawCharts(data.commonStrikes);
@@ -345,7 +446,7 @@
         function drawCharts(data) {
             // 获取价格调整值
             const priceAdjustment = parseFloat(document.getElementById('priceAdjustment').value) || 0;
-            
+
             // 准备Call图表数据，并应用价格调整
             const callStrikes = data.map(item => item.Strike - priceAdjustment);
             const callOI = data.map(item => item.Call_OI);
@@ -354,12 +455,12 @@
             // Call图表配置
             const callOption = {
                 // backgroundColor: '#1a1a1a', // 设置背景颜色为深色
-                color: ['#5470c6', 'red'], // 存量蓝色、变动红色
+                color: ['#1f77b4', '#d62728'], // 更专业的蓝红色搭配
                 tooltip: {
                     trigger: 'axis',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     borderColor: '#ccc',
-                    borderWidth: 1,
+                    borderwidth: 2,
                     textStyle: {
                         color: '#333'
                     }
@@ -390,7 +491,12 @@
                         nameTextStyle: {
                             color: '#333',
                         },
-                        splitLine: { show: false }
+                        splitLine: { 
+                            show: true,
+                            lineStyle: {
+                                color: '#eee'
+                            }
+                        }
                     }, {
                         type: 'value',
                         name: '变动',
@@ -428,6 +534,12 @@
                     },
                     nameTextStyle: {
                         color: '#333'
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#eee']
+                        }
                     }
                 },
                 series: [
@@ -440,7 +552,10 @@
                         xAxisIndex: 0,
                         lineStyle: {
                             width: 2,
-                            color: '#5470c6' // 存量线条颜色为蓝色
+                            color: '#1f77b4' // 使用更专业的蓝色
+                        },
+                        itemStyle: {
+                            color: '#1f77b4'
                         }
                     },
                     {
@@ -450,7 +565,7 @@
                         barWidth: '60%',
                         xAxisIndex: 1,
                         itemStyle: {
-                            color: 'red' // 变动柱状图颜色为红色
+                            color: '#d62728' // 使用更专业的红色
                         }
                     }
                 ]
@@ -464,12 +579,12 @@
             // Put图表配置
             const putOption = {
                 // backgroundColor: '#1a1a1a', // 设置背景颜色为深色
-                color: ['#5470c6', 'red'], // 存量蓝色、变动红色
+                color: ['#1f77b4', '#d62728'], // 更专业的蓝红色搭配
                 tooltip: {
                     trigger: 'axis',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     borderColor: '#ccc',
-                    borderWidth: 1,
+                    borderwidth: 2,
                     textStyle: {
                         color: '#333'
                     }
@@ -500,7 +615,12 @@
                         nameTextStyle: {
                             color: '#333',
                         },
-                        splitLine: { show: false }
+                        splitLine: { 
+                            show: true,
+                            lineStyle: {
+                                color: '#eee'
+                            }
+                        }
                     }, {
                         type: 'value',
                         name: '变动',
@@ -529,7 +649,7 @@
                     axisLabel: {
                         rotate: 0,
                         fontSize: 10,
-                        color: '#333' // y轴标签颜色为白色
+                        color: '#333', // y轴标签颜色为白色
                     },
                     axisLine: {
                         lineStyle: {
@@ -538,6 +658,12 @@
                     },
                     nameTextStyle: {
                         color: '#333'
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#eee']
+                        }
                     }
                 },
                 series: [
@@ -550,7 +676,10 @@
                         xAxisIndex: 0,
                         lineStyle: {
                             width: 2,
-                            color: '#5470c6' // 存量线条颜色为蓝色
+                            color: '#1f77b4' // 使用更专业的蓝色
+                        },
+                        itemStyle: {
+                            color: '#1f77b4'
                         }
                     },
                     {
@@ -560,7 +689,7 @@
                         barWidth: '60%',
                         xAxisIndex: 1,
                         itemStyle: {
-                            color: 'red' // 变动柱状图颜色为红色
+                            color: '#d62728' // 使用更专业的红色
                         }
                     }
                 ]

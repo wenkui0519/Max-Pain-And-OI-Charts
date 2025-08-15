@@ -3,7 +3,7 @@
  * @param {Array} data - 包含期权数据的数组
  * @returns {Object} 包含Max Pain和中性价值的结果对象
  */
-export function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike = 4000) {
+function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike = 4000) {
   // 验证数据
   if (!callData || callData.length === 0) {
     throw new Error('没有提供看涨期权数据');
@@ -111,8 +111,6 @@ export function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike 
   );
 
   // 计算统计信息
-  const totalCallOI = sortedData.reduce((sum, item) => sum + (item.Call_OI || 0), 0);
-  const totalPutOI = sortedData.reduce((sum, item) => sum + (item.Put_OI || 0), 0);
   let totalOI = 0;
   let weightedStrikeSum = 0;
 
@@ -147,13 +145,13 @@ export function calculateMaxPain(callData, putData, minStrike = 3000, maxStrike 
       strike: maxPainPoint.strike,
       pain: Number(maxPainPoint.pain) // 最大痛苦价值
     },
-    painPoints: painPoints,
-    summary: {
-      totalCallOI: totalCallOI,
-      totalPutOI: totalPutOI,
-      totalOI: totalOI,
-      totalCommonStrikes: commonStrikes.length
-    },
     commonStrikes: strikes // 图表数据
   };
+}
+
+// 导出函数以供浏览器使用
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { calculateMaxPain };
+} else {
+  window.calculateMaxPain = { calculateMaxPain };
 }
