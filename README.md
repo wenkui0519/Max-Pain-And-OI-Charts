@@ -10,7 +10,7 @@
 
 ## 安装
 
-确保你已经安装了Node.js，然后运行以下命令安装依赖：
+确保你已经安装了Node.js（ v22.18.0+ ），然后运行以下命令安装依赖：
 
 ```
 npm install
@@ -26,9 +26,7 @@ Excel文件从标题超链接下载
 
 启动服务器：
 
-```
-node server.js
-```
+双击start-server.bat文件
 
 然后在浏览器中访问 `http://localhost:3000`，上传包含期权数据的Excel文件。
 
