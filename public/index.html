@@ -299,6 +299,7 @@
         <div class="tabs">
             <div class="tab active" data-tab="maxpain">Max Pain 分析</div>
             <div class="tab" data-tab="fed">美联储流动性分析</div>
+            <div class="tab" data-tab="silver">白银观察</div>
         </div>
 
         <!-- Max Pain 分析标签内容 -->
@@ -451,6 +452,51 @@
                 </div>
             </div>
         </div>
+        
+        <!-- 白银观察标签内容 -->
+        <div id="silver" class="tab-content">
+            <div class="upload-area">
+                <h2>白银库存分析</h2>
+                <h2 class="link-title">
+                    Link:
+                    <a href="https://www.cmegroup.com/clearing/operations-and-deliveries/registrar-reports.html" target="_blank">
+                        CME持仓变化
+                    </a>
+                    |
+                    <a href="https://datacenter.jin10.com/reportType/dc_etf_sliver" target="_blank">
+                        白银ETF变化
+                    </a>
+                </h2>
+                <form id="silverForm" enctype="multipart/form-data">
+                    <input type="file" id="silverFileInput" name="file" accept=".xlsx, .xls" required>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="etfStart">期初持仓 (oz):</label>
+                            <input type="number" id="etfStart" name="etfStart" value="480000000" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="etfNow">最新持仓 (oz):</label>
+                            <input type="number" id="etfNow" name="etfNow" value="475500000" step="1">
+                        </div>
+                    </div>
+                    
+                    <button type="submit">分析白银库存</button>
+                </form>
+            </div>
+            
+            <div id="silverLoading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>正在分析，请稍候...</p>
+            </div>
+            
+            <div id="silverResult" class="hidden">
+                <h3>分析结果</h3>
+                <pre id="silverAnalysis" style="white-space: pre-wrap; font-family: monospace;"></pre>
+            </div>
+            
+            <div id="silverError" class="error hidden"></div>
+        </div>
     </div>
 
     <script>
@@ -482,6 +528,62 @@
                 putChart.resize();
             }, 100);
         });
+
+        // 白银库存分析表单提交事件
+        document.getElementById('silverForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('silverFileInput');
+            const etfStartInput = document.getElementById('etfStart');
+            const etfNowInput = document.getElementById('etfNow');
+            const resultDiv = document.getElementById('silverResult');
+            const loadingDiv = document.getElementById('silverLoading');
+            const errorDiv = document.getElementById('silverError');
+            const analysisPre = document.getElementById('silverAnalysis');
+            
+            // 隐藏结果和错误信息，显示加载状态
+            resultDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+            loadingDiv.classList.remove('hidden');
+            
+            if (!fileInput.files[0]) {
+                showError('请选择一个文件', errorDiv);
+                loadingDiv.classList.add('hidden');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('etfStart', etfStartInput.value || '0');
+            formData.append('etfNow', etfNowInput.value || '0');
+            
+            try {
+                const response = await fetch('/api/analyze-silver', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // 显示分析结果
+                    analysisPre.textContent = data.result.explanation;
+                    resultDiv.classList.remove('hidden');
+                } else {
+                    showError(data.error, errorDiv);
+                }
+            } catch (error) {
+                showError('请求失败: ' + error.message, errorDiv);
+            } finally {
+                loadingDiv.classList.add('hidden');
+            }
+        });
+        
+        // 显示错误信息的辅助函数
+        function showError(message, errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
 
         document.getElementById('uploadForm').addEventListener('submit', async function (e) {
             e.preventDefault();
