@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Max Pain 计算器</title>
+    <title>金融数据分析平台</title>
     <meta charset="UTF-8">
     <!-- <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script> -->
     <script src="./echarts.min.js"></script>
@@ -32,6 +32,43 @@
             color: #333;
             text-align: center;
             margin-bottom: 30px;
+        }
+
+        /* 标签页样式 */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .tab:hover {
+            background-color: #e9e9e9;
+        }
+
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .upload-area {
@@ -218,71 +255,219 @@
             margin: 10px 0;
             border: 1px solid #fed7d7;
         }
+
+        /* 美联储数据分析样式 */
+        .fed-analysis {
+            padding: 20px;
+        }
+
+        .analysis-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+
+        .analysis-section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .analysis-item {
+            margin-bottom: 15px;
+        }
+
+        .analysis-item a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        .analysis-item a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="upload-area">
-            <h2 class="link-title">
-                Link:
-                <a href="https://www.cmegroup.com/markets/metals/precious/gold.volume.options.html" target="_blank">
-                    CME Group Gold Volume
-                </a>
-            </h2>
-            <form id="uploadForm" enctype="multipart/form-data">
-                <input type="file" id="fileInput" name="file" accept=".xlsx, .xls" required>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="minStrike">最小执行价:</label>
-                        <input type="number" id="minStrike" name="minStrike" value="3000">
-                    </div>
-                    <div class="form-group">
-                        <label for="maxStrike">最大执行价:</label>
-                        <input type="number" id="maxStrike" name="maxStrike" value="4000">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="priceAdjustment">期货现货差额:</label>
-                        <input type="number" id="priceAdjustment" name="priceAdjustment" value="0" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label for="selectedMonth">选择月份:</label>
-                        <select id="selectedMonth" name="selectedMonth"></select>
-                    </div>
-                </div>
-
-                <button type="submit">计算MaxPain并可视化OI</button>
-            </form>
+        <h1>金融数据分析平台</h1>
+        
+        <!-- 标签页导航 -->
+        <div class="tabs">
+            <div class="tab active" data-tab="maxpain">Max Pain 分析</div>
+            <div class="tab" data-tab="fed">美联储流动性分析</div>
         </div>
-        <div id="loading" class="loading hidden">
-            <div class="spinner"></div>
-            <p>正在处理文件，请稍候...</p>
-        </div>
-        <div id="result">
-            <div id="summary">
-                <span class="summary-label">Max Pain 执行价:</span>
-                <span id="maxPainStrike" class="summary-value">-</span>
+
+        <!-- Max Pain 分析标签内容 -->
+        <div id="maxpain" class="tab-content active">
+            <div class="upload-area">
+                <h2 class="link-title">
+                    Link:
+                    <a href="https://www.cmegroup.com/markets/metals/precious/gold.volume.options.html" target="_blank">
+                        CME Group Gold Volume
+                    </a>
+                </h2>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <input type="file" id="fileInput" name="file" accept=".xlsx, .xls" required>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="minStrike">最小执行价:</label>
+                            <input type="number" id="minStrike" name="minStrike" value="3700">
+                        </div>
+                        <div class="form-group">
+                            <label for="maxStrike">最大执行价:</label>
+                            <input type="number" id="maxStrike" name="maxStrike" value="4400">
+                        </div>
+                    </div>
+
+                    <!-- <div class="form-row">
+                        <div class="form-group">
+                            <label for="goldPrice">黄金现价:</label>
+                            <input type="number" id="goldPrice" name="goldPrice" step="0.01" placeholder="例如: 2350.50">
+                        </div>
+                        <div class="form-group">
+                            <label for="expiryDate">到期日期:</label>
+                            <input type="date" id="expiryDate" name="expiryDate">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sofrRate">SOFR利率 (%):</label>
+                            <input type="number" id="sofrRate" name="sofrRate" step="0.001" placeholder="例如: 5.2">
+                        </div>
+                        <div class="form-group">
+                            <label for="impliedVolatility">隐含波动率 (%):</label>
+                            <input type="number" id="impliedVolatility" name="impliedVolatility" step="0.01" placeholder="例如: 16">
+                        </div>
+                    </div> -->
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="priceAdjustment">期货现货差额:</label>
+                            <input type="number" id="priceAdjustment" name="priceAdjustment" value="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="selectedMonth">选择月份:</label>
+                            <select id="selectedMonth" name="selectedMonth"></select>
+                        </div>
+                    </div>
+
+                    <button type="submit">计算MaxPain并可视化OI</button>
+                </form>
             </div>
-
-            <div class="charts-container">
-                <div class="chart-wrapper">
-                    <h3 class="chart-header">Call 期权数据</h3>
-                    <div id="callChart" style="width:100%; height:100%;"></div>
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>正在处理文件，请稍候...</p>
+            </div>
+            <div id="result">
+                <div id="summary">
+                    <span class="summary-label">Max Pain 执行价:</span>
+                    <span id="maxPainStrike" class="summary-value">-</span>
+                    <span class="summary-label" style="margin-left: 20px;">中性价值:</span>
+                    <span id="neutralValue" class="summary-value">-</span>
                 </div>
-                <div class="chart-wrapper">
-                    <h3 class="chart-header">Put 期权数据</h3>
-                    <div id="putChart" style="width:100%; height:100%;"></div>
+
+                <div class="charts-container">
+                    <div class="chart-wrapper">
+                        <h3 class="chart-header">Call 期权数据</h3>
+                        <div id="callChart" style="width:100%; height:100%;"></div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <h3 class="chart-header">Put 期权数据</h3>
+                        <div id="putChart" style="width:100%; height:100%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="error" class="error hidden"></div>
+        </div>
+
+        <!-- 美联储流动性分析标签内容 -->
+        <div id="fed" class="tab-content">
+            <div class="fed-analysis">
+                <h2>美联储流动性数据分析</h2>
+                
+                <div class="analysis-section">
+                    <h3>1. SRF (Standing Repo Facility)</h3>
+                    <div class="analysis-item">
+                        <p>a) 允许银行、交易商用美债作为抵押资产借款</p>
+                    </div>
+                    <div class="analysis-item">
+                        <p>b) SRF利率：等于联邦基金利率目标区间的上限。如：联邦基金利率目标区间为 5.25%–5.50%，则 SRF 利率 = 5.50%。</p>
+                    </div>
+                    <div class="analysis-item">
+                        <p>c) 数据来源: <a href="https://en.macromicro.me/charts/104115/us-fed-onrp" target="_blank">https://en.macromicro.me/charts/104115/us-fed-onrp</a></p>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <h3>2. SOFR (Secured Overnight Financing Rate)</h3>
+                    <div class="analysis-item">
+                        <p>a) 隔夜融资利率：银行、交易商用美债作为抵押，向市场换取现金</p>
+                    </div>
+                    <div class="analysis-item">
+                        <p>b) 非通胀导致的利率上涨，说明市场流动性收紧</p>
+                    </div>
+                    <div class="analysis-item">
+                        <p>c) 越接近SRF利率，说明市场流动性收紧</p>
+                    </div>
+                    <div class="analysis-item">
+                        <p>d) 可以超过SRF利率，说明市场流动性紧张</p>
+                    </div>
+                    <div class="analysis-item">
+                        <p>e) 数据来源: <a href="https://fred.stlouisfed.org/series/SOFR30DAYAVG" target="_blank">https://fred.stlouisfed.org/series/SOFR30DAYAVG</a></p>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <h3>3. 银行储备金</h3>
+                    <div class="analysis-item">
+                        <p>a) "充足储备金"水平目前市场共识约为 2.5–3万亿美元。低于此水平，则流动性存在问题。</p>
+                    </div>
+                    <div class="analysis-item">
+                        <p>b) 数据来源: <a href="https://fred.stlouisfed.org/series/WRESBAL" target="_blank">https://fred.stlouisfed.org/series/WRESBAL</a></p>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <h3>4. 美联储债务</h3>
+                    <div class="analysis-item">
+                        <p>a) 数据来源: <a href="https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny" target="_blank">https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny</a></p>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <h3>5. TGA账户 (Treasury General Account)</h3>
+                    <div class="analysis-item">
+                        <p>a) 能够为市场提供流动性</p>
+                    </div>
+                    <div class="analysis-item">
+                        <p>b) 数据来源: <a href="https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account" target="_blank">https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account</a></p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="error" class="error hidden"></div>
     </div>
 
     <script>
+        // 标签页切换功能
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有活动状态
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // 添加当前活动状态
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
         // 初始化ECharts实例
         let callChart = echarts.init(document.getElementById('callChart'));
         let putChart = echarts.init(document.getElementById('putChart'));
@@ -327,9 +512,20 @@
             formData.append('maxStrike', maxStrikeInput.value);
             formData.append('priceAdjustment', priceAdjustmentInput.value);
             formData.append('selectedMonth', selectedMonthInput.value);
+            
+            // // 添加中性价值计算所需的参数
+            // const goldPriceInput = document.getElementById('goldPrice');
+            // const expiryDateInput = document.getElementById('expiryDate');
+            // const sofrRateInput = document.getElementById('sofrRate');
+            // const impliedVolatilityInput = document.getElementById('impliedVolatility');
+            
+            // if (goldPriceInput.value) formData.append('goldPrice', goldPriceInput.value);
+            // if (expiryDateInput.value) formData.append('expiryDate', expiryDateInput.value);
+            // if (sofrRateInput.value) formData.append('sofrRate', sofrRateInput.value);
+            // if (impliedVolatilityInput.value) formData.append('impliedVolatility', impliedVolatilityInput.value);
 
             try {
-                const response = await fetch('/calculate', {
+                const response = await fetch('/api/calculate', {
                     method: 'POST',
                     body: formData
                 });
@@ -380,15 +576,28 @@
                 formData.append('selectedMonth', selectedMonth);
                 formData.append('minStrike', minStrikeInput.value);
                 formData.append('maxStrike', maxStrikeInput.value);
+                
+                // // 添加中性价值计算所需的参数
+                // const goldPriceInput = document.getElementById('goldPrice');
+                // const expiryDateInput = document.getElementById('expiryDate');
+                // const sofrRateInput = document.getElementById('sofrRate');
+                // const impliedVolatilityInput = document.getElementById('impliedVolatility');
+                
+                const requestData = {
+                    sessionId: serverData.sessionId,
+                    selectedMonth: selectedMonth,
+                    minStrike: minStrikeInput.value,
+                    maxStrike: maxStrikeInput.value
+                };
+                
+                // if (goldPriceInput.value) requestData.goldPrice = goldPriceInput.value;
+                // if (expiryDateInput.value) requestData.expiryDate = expiryDateInput.value;
+                // if (sofrRateInput.value) requestData.sofrRate = sofrRateInput.value;
+                // if (impliedVolatilityInput.value) requestData.impliedVolatility = impliedVolatilityInput.value;
 
-                const response = await fetch('/calculate-month', {
+                const response = await fetch('/api/calculate-month', {
                     method: 'POST',
-                    body: JSON.stringify({
-                        sessionId: serverData.sessionId,
-                        selectedMonth: selectedMonth,
-                        minStrike: minStrikeInput.value,
-                        maxStrike: maxStrikeInput.value
-                    }),
+                    body: JSON.stringify(requestData),
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -401,6 +610,7 @@
                     serverData.selectedMonth = selectedMonth;
                     serverData.maxPain = data.maxPain;
                     serverData.commonStrikes = data.commonStrikes;
+                    // serverData.rawData = data.rawData; // 添加原始数据
 
                     // 显示结果
                     displayResults(serverData);
@@ -439,6 +649,14 @@
         function displayResults(data) {
             // 显示摘要信息
             document.getElementById('maxPainStrike').textContent = data.maxPain.strike;
+            
+            // // 显示中性价值（如果存在）
+            // const neutralValueElement = document.getElementById('neutralValue');
+            // if (data.neutralValue) {
+            //     neutralValueElement.textContent = data.neutralValue.toFixed(2);
+            // } else {
+            //     neutralValueElement.textContent = '-';
+            // }
 
             // 绘制图表
             drawCharts(data.commonStrikes);

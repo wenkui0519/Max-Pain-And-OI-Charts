@@ -5,7 +5,7 @@ const fs = require('fs');
 const XLSX = require('xlsx');
 
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
 // 存储已解析的数据
 const parsedDataStore = new Map();
@@ -30,18 +30,11 @@ const upload = multer({ storage: storage });
 // 提供静态文件服务
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
-
-// 解析JSON请求体
+// 添加JSON解析中间件
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// 主页路由
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// 处理文件上传和计算的API端点
-app.post('/calculate', upload.single('file'), (req, res) => {
+// 设置API路由
+app.post('/api/calculate', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: '没有上传文件' });
   }
@@ -81,6 +74,63 @@ app.post('/calculate', upload.single('file'), (req, res) => {
     
     // 计算结果 
     const result = calculateMaxPain(monthData.calls, monthData.puts, minStrike, maxStrike);
+    
+    // // 添加原始数据到结果中，只保留Strike和At Close属性
+    // result.rawData = {
+    //   calls: monthData.calls.map(item => ({
+    //     Strike: item.Strike,
+    //     "At Close": item["At Close"] || 0
+    //   })),
+    //   puts: monthData.puts.map(item => ({
+    //     Strike: item.Strike,
+    //     "At Close": item["At Close"] || 0
+    //   }))
+    // };
+    
+    // // 如果提供了计算中性价值所需的参数，则计算中性价值
+    // const goldPrice = req.body.goldPrice ? parseFloat(req.body.goldPrice) : null;
+    // const expiryDate = req.body.expiryDate || null;
+    // const sofrRate = req.body.sofrRate ? parseFloat(req.body.sofrRate) / 100 : null; // 转换为小数
+    // const impliedVolatility = req.body.impliedVolatility ? parseFloat(req.body.impliedVolatility) / 100 : null; // 转换为小数
+    
+    // if (goldPrice && expiryDate && sofrRate !== null && impliedVolatility !== null) {
+    //   try {
+    //     const { calcNeutralPrice } = require('./calculateNeutralValue');
+    //     // 添加映射关系
+    //     const keyMap = {
+    //       'volume': 'Total Volume',
+    //       'oi': 'At Close',
+    //       'change': 'Change',
+    //     };
+        
+    //     const filteredCalls = monthData.calls
+    //       .map(item => ({ 
+    //         Strike: item.Strike, 
+    //         "At Close": item["At Close"] || item[keyMap.oi] || 0 
+    //       }));
+          
+    //     const filteredPuts = monthData.puts
+    //       .map(item => ({ 
+    //         Strike: item.Strike, 
+    //         "At Close": item["At Close"] || item[keyMap.oi] || 0 
+    //       }));
+
+    //     const neutralValue = calcNeutralPrice({
+    //       S: goldPrice,
+    //       expiry: expiryDate,
+    //       r: sofrRate,
+    //       iv: impliedVolatility,
+    //       data: {
+    //         calls: filteredCalls,
+    //         puts: filteredPuts
+    //       }
+    //     });
+    //     result.neutralValue = neutralValue;
+    //   } catch (error) {
+    //     console.error('计算中性价值时出错:', error);
+    //     // 即使计算中性价值失败，也不影响Max Pain结果
+    //   }
+    // }
     
     // 添加月份信息
     result.availableMonths = availableMonths;
@@ -207,7 +257,7 @@ function parseOptionData(rawData) {
 }
 
 // 处理月份切换的API端点，不重新解析文件
-app.post('/calculate-month', (req, res) => {
+app.post('/api/calculate-month', (req, res) => {
   try {
     const { sessionId, selectedMonth, minStrike, maxStrike } = req.body;
     
@@ -234,9 +284,66 @@ app.post('/calculate-month', (req, res) => {
     const result = calculateMaxPain(
       monthData.calls, 
       monthData.puts, 
-      minStrike ? parseFloat(minStrike) : 3000, 
-      maxStrike ? parseFloat(maxStrike) : 4000
+      minStrike ? parseFloat(minStrike) : 3700, 
+      maxStrike ? parseFloat(maxStrike) : 4400
     );
+    
+    // // 添加原始数据到结果中，只保留Strike和At Close属性
+    // result.rawData = {
+    //   calls: monthData.calls.map(item => ({
+    //     Strike: item.Strike,
+    //     "At Close": item["At Close"] || 0
+    //   })),
+    //   puts: monthData.puts.map(item => ({
+    //     Strike: item.Strike,
+    //     "At Close": item["At Close"] || 0
+    //   }))
+    // };
+    
+    // 如果提供了计算中性价值所需的参数，则计算中性价值
+    // const goldPrice = req.body.goldPrice ? parseFloat(req.body.goldPrice) : null;
+    // const expiryDate = req.body.expiryDate || null;
+    // const sofrRate = req.body.sofrRate ? parseFloat(req.body.sofrRate) / 100 : null; // 转换为小数
+    // const impliedVolatility = req.body.impliedVolatility ? parseFloat(req.body.impliedVolatility) / 100 : null; // 转换为小数
+    
+    // if (goldPrice && expiryDate && sofrRate !== null && impliedVolatility !== null) {
+    //   try {
+    //     const { calcNeutralPrice } = require('./calculateNeutralValue');
+    //     // 添加映射关系
+    //     const keyMap = {
+    //       'volume': 'Total Volume',
+    //       'oi': 'At Close',
+    //       'change': 'Change',
+    //     };
+        
+    //     const filteredCalls = monthData.calls
+    //       .map(item => ({ 
+    //         Strike: item.Strike, 
+    //         "At Close": item["At Close"] || item[keyMap.oi] || 0 
+    //       }));
+          
+    //     const filteredPuts = monthData.puts
+    //       .map(item => ({ 
+    //         Strike: item.Strike, 
+    //         "At Close": item["At Close"] || item[keyMap.oi] || 0 
+    //       }));
+
+    //     const neutralValue = calcNeutralPrice({
+    //       S: goldPrice,
+    //       expiry: expiryDate,
+    //       r: sofrRate,
+    //       iv: impliedVolatility,
+    //       data: {
+    //         calls: filteredCalls,
+    //         puts: filteredPuts
+    //       }
+    //     });
+    //     result.neutralValue = neutralValue;
+    //   } catch (error) {
+    //     console.error('计算中性价值时出错:', error);
+    //     // 即使计算中性价值失败，也不影响Max Pain结果
+    //   }
+    // }
     
     res.json(result);
   } catch (error) {
@@ -244,7 +351,7 @@ app.post('/calculate-month', (req, res) => {
   }
 });
 
-// 启动服务器
-app.listen(port, () => {
-  console.log(`服务器运行在 http://localhost:${port}`);
+
+app.listen(PORT, () => {
+  console.log(`服务器运行在 http://localhost:${PORT}`);
 });
