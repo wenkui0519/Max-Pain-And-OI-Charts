@@ -294,7 +294,7 @@
 <body>
     <div class="container">
         <h1>金融数据分析平台</h1>
-
+        
         <!-- 标签页导航 -->
         <div class="tabs">
             <div class="tab active" data-tab="maxpain">Max Pain 分析</div>
@@ -391,7 +391,7 @@
         <div id="fed" class="tab-content">
             <div class="fed-analysis">
                 <h2>美联储流动性数据分析</h2>
-
+                
                 <div class="analysis-section">
                     <h3>1. SRF (Standing Repo Facility)</h3>
                     <div class="analysis-item">
@@ -401,11 +401,10 @@
                         <p>b) SRF利率：等于联邦基金利率目标区间的上限。如：联邦基金利率目标区间为 5.25%–5.50%，则 SRF 利率 = 5.50%。</p>
                     </div>
                     <div class="analysis-item">
-                        <p>c) 数据来源: <a href="https://en.macromicro.me/charts/104115/us-fed-onrp"
-                                target="_blank">https://en.macromicro.me/charts/104115/us-fed-onrp</a></p>
+                        <p>c) 数据来源: <a href="https://en.macromicro.me/charts/104115/us-fed-onrp" target="_blank">https://en.macromicro.me/charts/104115/us-fed-onrp</a></p>
                     </div>
                 </div>
-
+                
                 <div class="analysis-section">
                     <h3>2. SOFR (Secured Overnight Financing Rate)</h3>
                     <div class="analysis-item">
@@ -421,55 +420,46 @@
                         <p>d) 可以超过SRF利率，说明市场流动性紧张</p>
                     </div>
                     <div class="analysis-item">
-                        <p>e) 数据来源: <a href="https://fred.stlouisfed.org/series/SOFR30DAYAVG"
-                                target="_blank">https://fred.stlouisfed.org/series/SOFR30DAYAVG</a></p>
+                        <p>e) 数据来源: <a href="https://fred.stlouisfed.org/series/SOFR30DAYAVG" target="_blank">https://fred.stlouisfed.org/series/SOFR30DAYAVG</a></p>
                     </div>
                 </div>
-
+                
                 <div class="analysis-section">
                     <h3>3. 银行储备金</h3>
                     <div class="analysis-item">
                         <p>a) "充足储备金"水平目前市场共识约为 2.5–3万亿美元。低于此水平，则流动性存在问题。</p>
                     </div>
                     <div class="analysis-item">
-                        <p>b) 数据来源: <a href="https://fred.stlouisfed.org/series/WRESBAL"
-                                target="_blank">https://fred.stlouisfed.org/series/WRESBAL</a></p>
+                        <p>b) 数据来源: <a href="https://fred.stlouisfed.org/series/WRESBAL" target="_blank">https://fred.stlouisfed.org/series/WRESBAL</a></p>
                     </div>
                 </div>
-
+                
                 <div class="analysis-section">
                     <h3>4. 美联储债务</h3>
                     <div class="analysis-item">
-                        <p>a) 数据来源: <a
-                                href="https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny"
-                                target="_blank">https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny</a>
-                        </p>
+                        <p>a) 数据来源: <a href="https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny" target="_blank">https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny</a></p>
                     </div>
                 </div>
-
+                
                 <div class="analysis-section">
                     <h3>5. TGA账户 (Treasury General Account)</h3>
                     <div class="analysis-item">
                         <p>a) 能够为市场提供流动性</p>
                     </div>
                     <div class="analysis-item">
-                        <p>b) 数据来源: <a
-                                href="https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account"
-                                target="_blank">https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account</a>
-                        </p>
+                        <p>b) 数据来源: <a href="https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account" target="_blank">https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account</a></p>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- 白银观察标签内容 -->
         <div id="silver" class="tab-content">
             <div class="upload-area">
                 <h2>白银库存分析</h2>
                 <h2 class="link-title">
                     Link:
-                    <a href="https://www.cmegroup.com/clearing/operations-and-deliveries/registrar-reports.html"
-                        target="_blank">
+                    <a href="https://www.cmegroup.com/clearing/operations-and-deliveries/registrar-reports.html" target="_blank">
                         CME持仓变化
                     </a>
                     |
@@ -479,7 +469,7 @@
                 </h2>
                 <form id="silverForm" enctype="multipart/form-data">
                     <input type="file" id="silverFileInput" name="file" accept=".xlsx, .xls" required>
-
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="etfStart">期初持仓 (oz):</label>
@@ -490,21 +480,21 @@
                             <input type="number" id="etfNow" name="etfNow" value="475500000" step="1">
                         </div>
                     </div>
-
+                    
                     <button type="submit">分析白银库存</button>
                 </form>
             </div>
-
+            
             <div id="silverLoading" class="loading hidden">
                 <div class="spinner"></div>
                 <p>正在分析，请稍候...</p>
             </div>
-
+            
             <div id="silverResult" class="hidden">
                 <h3>分析结果</h3>
                 <pre id="silverAnalysis" style="white-space: pre-wrap; font-family: monospace;"></pre>
             </div>
-
+            
             <div id="silverError" class="error hidden"></div>
         </div>
     </div>
@@ -516,7 +506,7 @@
                 // 移除所有活动状态
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
+                
                 // 添加当前活动状态
                 tab.classList.add('active');
                 const tabId = tab.getAttribute('data-tab');
@@ -542,7 +532,7 @@
         // 白银库存分析表单提交事件
         document.getElementById('silverForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-
+            
             const fileInput = document.getElementById('silverFileInput');
             const etfStartInput = document.getElementById('etfStart');
             const etfNowInput = document.getElementById('etfNow');
@@ -550,31 +540,31 @@
             const loadingDiv = document.getElementById('silverLoading');
             const errorDiv = document.getElementById('silverError');
             const analysisPre = document.getElementById('silverAnalysis');
-
+            
             // 隐藏结果和错误信息，显示加载状态
             resultDiv.classList.add('hidden');
             errorDiv.classList.add('hidden');
             loadingDiv.classList.remove('hidden');
-
+            
             if (!fileInput.files[0]) {
                 showError('请选择一个文件', errorDiv);
                 loadingDiv.classList.add('hidden');
                 return;
             }
-
+            
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
             formData.append('etfStart', etfStartInput.value || '0');
             formData.append('etfNow', etfNowInput.value || '0');
-
+            
             try {
                 const response = await fetch('/api/analyze-silver', {
                     method: 'POST',
                     body: formData
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (response.ok) {
                     // 显示分析结果
                     analysisPre.textContent = data.result.explanation;
@@ -588,7 +578,7 @@
                 loadingDiv.classList.add('hidden');
             }
         });
-
+        
         // 显示错误信息的辅助函数
         function showError(message, errorElement) {
             errorElement.textContent = message;
@@ -624,13 +614,13 @@
             formData.append('maxStrike', maxStrikeInput.value);
             formData.append('priceAdjustment', priceAdjustmentInput.value);
             formData.append('selectedMonth', selectedMonthInput.value);
-
+            
             // // 添加中性价值计算所需的参数
             // const goldPriceInput = document.getElementById('goldPrice');
             // const expiryDateInput = document.getElementById('expiryDate');
             // const sofrRateInput = document.getElementById('sofrRate');
             // const impliedVolatilityInput = document.getElementById('impliedVolatility');
-
+            
             // if (goldPriceInput.value) formData.append('goldPrice', goldPriceInput.value);
             // if (expiryDateInput.value) formData.append('expiryDate', expiryDateInput.value);
             // if (sofrRateInput.value) formData.append('sofrRate', sofrRateInput.value);
@@ -688,20 +678,20 @@
                 formData.append('selectedMonth', selectedMonth);
                 formData.append('minStrike', minStrikeInput.value);
                 formData.append('maxStrike', maxStrikeInput.value);
-
+                
                 // // 添加中性价值计算所需的参数
                 // const goldPriceInput = document.getElementById('goldPrice');
                 // const expiryDateInput = document.getElementById('expiryDate');
                 // const sofrRateInput = document.getElementById('sofrRate');
                 // const impliedVolatilityInput = document.getElementById('impliedVolatility');
-
+                
                 const requestData = {
                     sessionId: serverData.sessionId,
                     selectedMonth: selectedMonth,
                     minStrike: minStrikeInput.value,
                     maxStrike: maxStrikeInput.value
                 };
-
+                
                 // if (goldPriceInput.value) requestData.goldPrice = goldPriceInput.value;
                 // if (expiryDateInput.value) requestData.expiryDate = expiryDateInput.value;
                 // if (sofrRateInput.value) requestData.sofrRate = sofrRateInput.value;
@@ -758,315 +748,250 @@
             });
         }
 
-
-        // --- 1. 全局通用工具：清洗数字 (处理逗号、空值) ---
-        const cleanNum = (val) => {
-            if (val === null || val === undefined || val === '') return 0;
-            if (typeof val === 'number') return val;
-            // 移除逗号并转为浮点数
-            let str = String(val).replace(/,/g, '');
-            return parseFloat(str) || 0;
-        };
-
-        // --- 2. 标准 Max Pain 计算函数 (安全版) ---
-        function calculateMaxPain(strikesData) {
-            if (!strikesData || strikesData.length === 0) return 0;
-
-            let minTotalLoss = Infinity;
-            let maxPainStrike = 0;
-
-            // 预处理数据，避免在循环中重复清洗，提高性能
-            const cleanData = strikesData.map(item => ({
-                strike: cleanNum(item.Strike),
-                callOI: cleanNum(item.Call_OI),
-                putOI: cleanNum(item.Put_OI)
-            }));
-
-            // 遍历每一个 Strike 作为假设的结算价
-            for (let i = 0; i < cleanData.length; i++) {
-                const assumptionPrice = cleanData[i].strike;
-                let currentTotalLoss = 0;
-
-                // 计算全场期权在该假设价格下的总内在价值
-                for (let j = 0; j < cleanData.length; j++) {
-                    const item = cleanData[j];
-
-                    // Call 亏损：结算价 > 执行价
-                    if (assumptionPrice > item.strike) {
-                        currentTotalLoss += (assumptionPrice - item.strike) * item.callOI;
-                    }
-
-                    // Put 亏损：结算价 < 执行价
-                    if (assumptionPrice < item.strike) {
-                        currentTotalLoss += (item.strike - assumptionPrice) * item.putOI;
-                    }
-                }
-
-                // 寻找最小值
-                if (currentTotalLoss < minTotalLoss) {
-                    minTotalLoss = currentTotalLoss;
-                    maxPainStrike = assumptionPrice;
-                }
-            }
-
-            return maxPainStrike;
-        }
-
-        // --- 3. 显示结果主函数 ---
         function displayResults(data) {
-            // 确保数据源存在
-            const sourceData = data.commonStrikes || data || [];
+            // 显示摘要信息
+            document.getElementById('maxPainStrike').textContent = data.maxPain.strike;
+            
+            // // 显示中性价值（如果存在）
+            // const neutralValueElement = document.getElementById('neutralValue');
+            // if (data.neutralValue) {
+            //     neutralValueElement.textContent = data.neutralValue.toFixed(2);
+            // } else {
+            //     neutralValueElement.textContent = '-';
+            // }
 
-            // 【关键修复】使用 try-catch 包裹计算逻辑
-            // 这样即使计算出错，也不会导致网页按钮失效
-            try {
-                const correctMaxPain = calculateMaxPain(sourceData);
-                console.log("计算出的 Max Pain:", correctMaxPain);
+            // 绘制图表
+            drawCharts(data.commonStrikes);
+        }
 
-                const maxPainElement = document.getElementById('maxPainStrike');
-                if (maxPainElement) {
-                    maxPainElement.textContent = correctMaxPain;
-                }
-            } catch (e) {
-                console.error("Max Pain 计算出错:", e);
-                // 出错时显示横杠，保证不卡死
-                const maxPainElement = document.getElementById('maxPainStrike');
-                if (maxPainElement) maxPainElement.textContent = "-";
+function drawCharts(data) {
+    // --- 1. 数据处理 ---
+    const cleanNum = (val) => {
+        if (val === null || val === undefined || val === '') return 0;
+        if (typeof val === 'number') return val;
+        let str = String(val).replace(/,/g, '');
+        return parseFloat(str) || 0;
+    };
+
+    // 排序
+    data.sort((a, b) => cleanNum(a.Strike) - cleanNum(b.Strike));
+
+    const priceAdjustment = parseFloat(document.getElementById('priceAdjustment').value) || 0;
+
+    const callStrikes = data.map(item => cleanNum(item.Strike) - priceAdjustment);
+    const callOI = data.map(item => cleanNum(item.Call_OI));
+    const callChange = data.map(item => cleanNum(item.Call_Change));
+
+    const putStrikes = data.map(item => cleanNum(item.Strike) - priceAdjustment);
+    const putOI = data.map(item => cleanNum(item.Put_OI));
+    const putChange = data.map(item => cleanNum(item.Put_Change));
+
+    // 计算最大范围以居中
+    const maxCallChangeAbs = Math.max(...callChange.map(Math.abs)) || 10;
+    const callChangeLimit = Math.ceil(maxCallChangeAbs * 1.1);
+    const maxPutChangeAbs = Math.max(...putChange.map(Math.abs)) || 10;
+    const putChangeLimit = Math.ceil(maxPutChangeAbs * 1.1);
+
+    // --- 2. Call 配置 ---
+    const callOption = {
+        color: ['#1f77b4', '#d62728'],
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderColor: '#ccc',
+            borderWidth: 1,
+            textStyle: { color: '#333' }
+        },
+        legend: {
+            data: ['存量', '变动'],
+            top: 5,         // 【修改】固定像素，不再用百分比
+            right: 20,      // 【修改】固定像素
+            textStyle: { color: '#333' }
+        },
+        grid: {
+            left: 10,
+            right: 10,
+            bottom: 30,     // 【修改】底部留白固定
+            top: 40,        // 【关键修改】头部留白改成固定40px，解决"头部太宽"的问题
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'value',
+                name: '存量',
+                position: 'top',
+                min: 0,
+                splitLine: { show: true, lineStyle: { color: '#eee' } },
+                axisLabel: { color: '#333' }
+            }, 
+            {
+                type: 'value',
+                name: '变动',
+                nameLocation: 'middle',
+                nameGap: 30,
+                position: 'bottom',
+                min: -callChangeLimit,
+                max: callChangeLimit,
+                axisLabel: { formatter: '{value}', color: '#333' },
+                axisLine: { lineStyle: { color: '#444' } },
+                splitLine: { show: false }
             }
+        ],
+        yAxis: {
+            type: 'category',
+            data: callStrikes,
+            axisLabel: { fontSize: 10, color: '#333' },
+            axisLine: { lineStyle: { color: '#444' } },
+            splitLine: { show: true, lineStyle: { color: ['#eee'] } }
+        },
+        series: [
+            {
+                name: '存量',
+                type: 'line',
+                data: callOI,
+                smooth: false,
+                showSymbol: false,
+                connectNulls: true,
+                xAxisIndex: 0,
+                lineStyle: { width: 2, color: '#1f77b4' },
+                itemStyle: { color: '#1f77b4' }
+            },
+            {
+                name: '变动',
+                type: 'bar',
+                data: callChange,
+                xAxisIndex: 1,
+                itemStyle: { color: '#d62728' },
+                barWidth: '60%' 
+            }
+        ]
+    };
 
-            // 绘制图表 (drawCharts 现在会直接使用上面的全局 cleanNum)
-            // 这里的 drawCharts 需要稍微改一下开头，因为它不再需要自己定义 cleanNum 了
-            drawCharts(sourceData);
-        }
+    // --- 3. Put 配置 ---
+    const putOption = {
+        color: ['#1f77b4', '#d62728'],
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderColor: '#ccc',
+            borderWidth: 1,
+            textStyle: { color: '#333' }
+        },
+        legend: {
+            data: ['存量', '变动'],
+            top: 5,
+            right: 20,
+            textStyle: { color: '#333' }
+        },
+        grid: {
+            left: 10,
+            right: 10,
+            bottom: 30,
+            top: 40,      // 【关键修改】头部固定高度
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'value',
+                name: '存量',
+                position: 'top',
+                min: 0,
+                splitLine: { show: true, lineStyle: { color: '#eee' } },
+                axisLabel: { color: '#333' }
+            }, 
+            {
+                type: 'value',
+                name: '变动',
+                nameLocation: 'middle',
+                nameGap: 30,
+                position: 'bottom',
+                min: -putChangeLimit,
+                max: putChangeLimit,
+                axisLabel: { formatter: '{value}', color: '#333' },
+                axisLine: { lineStyle: { color: '#444' } },
+                splitLine: { show: false }
+            }
+        ],
+        yAxis: {
+            type: 'category',
+            data: putStrikes,
+            axisLabel: { fontSize: 10, color: '#333' },
+            axisLine: { lineStyle: { color: '#444' } },
+            splitLine: { show: true, lineStyle: { color: ['#eee'] } }
+        },
+        series: [
+            {
+                name: '存量',
+                type: 'line',
+                data: putOI,
+                smooth: false,
+                showSymbol: false,
+                connectNulls: true,
+                xAxisIndex: 0,
+                lineStyle: { width: 2, color: '#1f77b4' },
+                itemStyle: { color: '#1f77b4' }
+            },
+            {
+                name: '变动',
+                type: 'bar',
+                data: putChange,
+                xAxisIndex: 1,
+                itemStyle: { color: '#d62728' },
+                barWidth: '60%'
+            }
+        ]
+    };
 
-        function drawCharts(data) {
-            // --- 1. 数据处理 ---
-            const cleanNum = (val) => {
-                if (val === null || val === undefined || val === '') return 0;
-                if (typeof val === 'number') return val;
-                let str = String(val).replace(/,/g, '');
-                return parseFloat(str) || 0;
-            };
+    // --- 4. 渲染 ---
+    callChart.setOption(callOption, true);
+    putChart.setOption(putOption, true);
 
-            // 排序
-            data.sort((a, b) => cleanNum(a.Strike) - cleanNum(b.Strike));
+    // 移除旧事件
+    callChart.off('updateAxisPointer');
+    putChart.off('updateAxisPointer');
 
-            const priceAdjustment = parseFloat(document.getElementById('priceAdjustment').value) || 0;
-
-            const callStrikes = data.map(item => cleanNum(item.Strike) - priceAdjustment);
-            const callOI = data.map(item => cleanNum(item.Call_OI));
-            const callChange = data.map(item => cleanNum(item.Call_Change));
-
-            const putStrikes = data.map(item => cleanNum(item.Strike) - priceAdjustment);
-            const putOI = data.map(item => cleanNum(item.Put_OI));
-            const putChange = data.map(item => cleanNum(item.Put_Change));
-
-            // 计算最大范围以居中
-            const maxCallChangeAbs = Math.max(...callChange.map(Math.abs)) || 10;
-            const callChangeLimit = Math.ceil(maxCallChangeAbs * 1.1);
-            const maxPutChangeAbs = Math.max(...putChange.map(Math.abs)) || 10;
-            const putChangeLimit = Math.ceil(maxPutChangeAbs * 1.1);
-
-            // --- 2. Call 配置 ---
-            const callOption = {
-                color: ['#1f77b4', '#d62728'],
-                tooltip: {
-                    trigger: 'axis',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    borderColor: '#ccc',
-                    borderWidth: 1,
-                    textStyle: { color: '#333' }
-                },
-                legend: {
-                    data: ['存量', '变动'],
-                    top: 5,         // 【修改】固定像素，不再用百分比
-                    right: 20,      // 【修改】固定像素
-                    textStyle: { color: '#333' }
-                },
-                grid: {
-                    left: 10,
-                    right: 10,
-                    bottom: 30,     // 【修改】底部留白固定
-                    top: 40,        // 【关键修改】头部留白改成固定40px，解决"头部太宽"的问题
-                    containLabel: true
-                },
-                xAxis: [
-                    {
-                        type: 'value',
-                        name: '存量',
-                        position: 'top',
-                        min: 0,
-                        splitLine: { show: true, lineStyle: { color: '#eee' } },
-                        axisLabel: { color: '#333' }
-                    },
-                    {
-                        type: 'value',
-                        name: '变动',
-                        nameLocation: 'middle',
-                        nameGap: 30,
-                        position: 'bottom',
-                        min: -callChangeLimit,
-                        max: callChangeLimit,
-                        axisLabel: { formatter: '{value}', color: '#333' },
-                        axisLine: { lineStyle: { color: '#444' } },
-                        splitLine: { show: false }
+    // 联动逻辑
+    let isDispatching = false;
+    const syncTooltip = (sourceChart, targetChart) => {
+        return (params) => {
+            if (isDispatching) return;
+            try {
+                isDispatching = true;
+                if (params && params.axesInfo && params.axesInfo.length > 0) {
+                    const yAxisInfo = params.axesInfo.find(axis => axis.axisDim === 'y');
+                    if (yAxisInfo && yAxisInfo.value != null) {
+                        targetChart.dispatchAction({
+                            type: 'showTip',
+                            seriesIndex: 0,
+                            dataIndex: yAxisInfo.value
+                        });
                     }
-                ],
-                yAxis: {
-                    type: 'category',
-                    data: callStrikes,
-                    axisLabel: { fontSize: 10, color: '#333' },
-                    axisLine: { lineStyle: { color: '#444' } },
-                    splitLine: { show: true, lineStyle: { color: ['#eee'] } }
-                },
-                series: [
-                    {
-                        name: '存量',
-                        type: 'line',
-                        data: callOI,
-                        smooth: false,
-                        showSymbol: false,
-                        connectNulls: true,
-                        xAxisIndex: 0,
-                        lineStyle: { width: 2, color: '#1f77b4' },
-                        itemStyle: { color: '#1f77b4' }
-                    },
-                    {
-                        name: '变动',
-                        type: 'bar',
-                        data: callChange,
-                        xAxisIndex: 1,
-                        itemStyle: { color: '#d62728' },
-                        barWidth: '60%'
-                    }
-                ]
-            };
-
-            // --- 3. Put 配置 ---
-            const putOption = {
-                color: ['#1f77b4', '#d62728'],
-                tooltip: {
-                    trigger: 'axis',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    borderColor: '#ccc',
-                    borderWidth: 1,
-                    textStyle: { color: '#333' }
-                },
-                legend: {
-                    data: ['存量', '变动'],
-                    top: 5,
-                    right: 20,
-                    textStyle: { color: '#333' }
-                },
-                grid: {
-                    left: 10,
-                    right: 10,
-                    bottom: 30,
-                    top: 40,      // 【关键修改】头部固定高度
-                    containLabel: true
-                },
-                xAxis: [
-                    {
-                        type: 'value',
-                        name: '存量',
-                        position: 'top',
-                        min: 0,
-                        splitLine: { show: true, lineStyle: { color: '#eee' } },
-                        axisLabel: { color: '#333' }
-                    },
-                    {
-                        type: 'value',
-                        name: '变动',
-                        nameLocation: 'middle',
-                        nameGap: 30,
-                        position: 'bottom',
-                        min: -putChangeLimit,
-                        max: putChangeLimit,
-                        axisLabel: { formatter: '{value}', color: '#333' },
-                        axisLine: { lineStyle: { color: '#444' } },
-                        splitLine: { show: false }
-                    }
-                ],
-                yAxis: {
-                    type: 'category',
-                    data: putStrikes,
-                    axisLabel: { fontSize: 10, color: '#333' },
-                    axisLine: { lineStyle: { color: '#444' } },
-                    splitLine: { show: true, lineStyle: { color: ['#eee'] } }
-                },
-                series: [
-                    {
-                        name: '存量',
-                        type: 'line',
-                        data: putOI,
-                        smooth: false,
-                        showSymbol: false,
-                        connectNulls: true,
-                        xAxisIndex: 0,
-                        lineStyle: { width: 2, color: '#1f77b4' },
-                        itemStyle: { color: '#1f77b4' }
-                    },
-                    {
-                        name: '变动',
-                        type: 'bar',
-                        data: putChange,
-                        xAxisIndex: 1,
-                        itemStyle: { color: '#d62728' },
-                        barWidth: '60%'
-                    }
-                ]
-            };
-
-            // --- 4. 渲染 ---
-            callChart.setOption(callOption, true);
-            putChart.setOption(putOption, true);
-
-            // 移除旧事件
-            callChart.off('updateAxisPointer');
-            putChart.off('updateAxisPointer');
-
-            // 联动逻辑
-            let isDispatching = false;
-            const syncTooltip = (sourceChart, targetChart) => {
-                return (params) => {
-                    if (isDispatching) return;
-                    try {
-                        isDispatching = true;
-                        if (params && params.axesInfo && params.axesInfo.length > 0) {
-                            const yAxisInfo = params.axesInfo.find(axis => axis.axisDim === 'y');
-                            if (yAxisInfo && yAxisInfo.value != null) {
-                                targetChart.dispatchAction({
-                                    type: 'showTip',
-                                    seriesIndex: 0,
-                                    dataIndex: yAxisInfo.value
-                                });
-                            }
-                        }
-                    } finally {
-                        setTimeout(() => { isDispatching = false; }, 0);
-                    }
-                };
-            };
-
-            callChart.on('updateAxisPointer', syncTooltip(callChart, putChart));
-            putChart.on('updateAxisPointer', syncTooltip(putChart, callChart));
-
-            // --- 5. 关键修改：调整高度密度 ---
-            setTimeout(() => {
-                const wrapper = document.querySelector('.chart-wrapper');
-                if (wrapper) {
-                    const chartWidth = wrapper.clientWidth;
-
-                    // 【关键修改】
-                    // 之前是 * 25，现在改成 * 10
-                    // 这会让行与行之间非常紧凑，大约是之前的 1/2.5
-                    const autoHeight = Math.max(500, data.length * 10);
-
-                    callChart.resize({ width: chartWidth, height: autoHeight });
-                    putChart.resize({ width: chartWidth, height: autoHeight });
                 }
-            }, 100);
+            } finally {
+                setTimeout(() => { isDispatching = false; }, 0);
+            }
+        };
+    };
+
+    callChart.on('updateAxisPointer', syncTooltip(callChart, putChart));
+    putChart.on('updateAxisPointer', syncTooltip(putChart, callChart));
+
+    // --- 5. 关键修改：调整高度密度 ---
+    setTimeout(() => {
+        const wrapper = document.querySelector('.chart-wrapper');
+        if (wrapper) {
+            const chartWidth = wrapper.clientWidth;
+            
+            // 【关键修改】
+            // 之前是 * 25，现在改成 * 10
+            // 这会让行与行之间非常紧凑，大约是之前的 1/2.5
+            const autoHeight = Math.max(500, data.length * 10); 
+            
+            callChart.resize({ width: chartWidth, height: autoHeight });
+            putChart.resize({ width: chartWidth, height: autoHeight });
         }
+    }, 100);
+}
 
     </script>
 </body>
