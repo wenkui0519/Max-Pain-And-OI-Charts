@@ -256,6 +256,40 @@
             border: 1px solid #fed7d7;
         }
 
+        /* 新增的附近期权数据区域样式 */
+        #filteredOptionsResult {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+
+        #filteredOptionsResult h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        #filteredOptionsJson {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        #copyJsonBtn {
+            background-color: #17a2b8;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        #copyJsonBtn:hover {
+            background-color: #138496;
+        }
+
         /* 美联储数据分析样式 */
         .fed-analysis {
             padding: 20px;
@@ -294,7 +328,7 @@
 <body>
     <div class="container">
         <h1>金融数据分析平台</h1>
-        
+
         <!-- 标签页导航 -->
         <div class="tabs">
             <div class="tab active" data-tab="maxpain">Max Pain 分析</div>
@@ -317,7 +351,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="minStrike">最小执行价:</label>
-                            <input type="number" id="minStrike" name="minStrike" value="3700">
+                            <input type="number" id="minStrike" name="minStrike" value="3800">
                         </div>
                         <div class="form-group">
                             <label for="maxStrike">最大执行价:</label>
@@ -383,6 +417,27 @@
                         <div id="putChart" style="width:100%; height:100%;"></div>
                     </div>
                 </div>
+
+                <!-- 获取指定周期期权数据 -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="minStrikeFilter">最小行权价:</label>
+                        <input type="number" id="minStrikeFilter" name="minStrikeFilter" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="maxStrikeFilter">最大行权价:</label>
+                        <input type="number" id="maxStrikeFilter" name="maxStrikeFilter" step="0.01">
+                    </div>
+                    <button type="button" id="getOptionDataBtn">获取附近期权</button>
+                </div>
+                <div id="filteredOptionsResult" class="hidden">
+                    <h3>指定范围内的期权数据</h3>
+                    <div class="form-row" style="margin-bottom: 10px;">
+                        <button id="copyJsonBtn" type="button">复制JSON</button>
+                    </div>
+                    <pre id="filteredOptionsJson"
+                        style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;"></pre>
+                </div>
             </div>
             <div id="error" class="error hidden"></div>
         </div>
@@ -391,7 +446,7 @@
         <div id="fed" class="tab-content">
             <div class="fed-analysis">
                 <h2>美联储流动性数据分析</h2>
-                
+
                 <div class="analysis-section">
                     <h3>1. SRF (Standing Repo Facility)</h3>
                     <div class="analysis-item">
@@ -401,10 +456,11 @@
                         <p>b) SRF利率：等于联邦基金利率目标区间的上限。如：联邦基金利率目标区间为 5.25%–5.50%，则 SRF 利率 = 5.50%。</p>
                     </div>
                     <div class="analysis-item">
-                        <p>c) 数据来源: <a href="https://en.macromicro.me/charts/104115/us-fed-onrp" target="_blank">https://en.macromicro.me/charts/104115/us-fed-onrp</a></p>
+                        <p>c) 数据来源: <a href="https://en.macromicro.me/charts/104115/us-fed-onrp"
+                                target="_blank">https://en.macromicro.me/charts/104115/us-fed-onrp</a></p>
                     </div>
                 </div>
-                
+
                 <div class="analysis-section">
                     <h3>2. SOFR (Secured Overnight Financing Rate)</h3>
                     <div class="analysis-item">
@@ -420,46 +476,55 @@
                         <p>d) 可以超过SRF利率，说明市场流动性紧张</p>
                     </div>
                     <div class="analysis-item">
-                        <p>e) 数据来源: <a href="https://fred.stlouisfed.org/series/SOFR30DAYAVG" target="_blank">https://fred.stlouisfed.org/series/SOFR30DAYAVG</a></p>
+                        <p>e) 数据来源: <a href="https://fred.stlouisfed.org/series/SOFR30DAYAVG"
+                                target="_blank">https://fred.stlouisfed.org/series/SOFR30DAYAVG</a></p>
                     </div>
                 </div>
-                
+
                 <div class="analysis-section">
                     <h3>3. 银行储备金</h3>
                     <div class="analysis-item">
                         <p>a) "充足储备金"水平目前市场共识约为 2.5–3万亿美元。低于此水平，则流动性存在问题。</p>
                     </div>
                     <div class="analysis-item">
-                        <p>b) 数据来源: <a href="https://fred.stlouisfed.org/series/WRESBAL" target="_blank">https://fred.stlouisfed.org/series/WRESBAL</a></p>
+                        <p>b) 数据来源: <a href="https://fred.stlouisfed.org/series/WRESBAL"
+                                target="_blank">https://fred.stlouisfed.org/series/WRESBAL</a></p>
                     </div>
                 </div>
-                
+
                 <div class="analysis-section">
                     <h3>4. 美联储债务</h3>
                     <div class="analysis-item">
-                        <p>a) 数据来源: <a href="https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny" target="_blank">https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny</a></p>
+                        <p>a) 数据来源: <a
+                                href="https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny"
+                                target="_blank">https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny</a>
+                        </p>
                     </div>
                 </div>
-                
+
                 <div class="analysis-section">
                     <h3>5. TGA账户 (Treasury General Account)</h3>
                     <div class="analysis-item">
                         <p>a) 能够为市场提供流动性</p>
                     </div>
                     <div class="analysis-item">
-                        <p>b) 数据来源: <a href="https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account" target="_blank">https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account</a></p>
+                        <p>b) 数据来源: <a
+                                href="https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account"
+                                target="_blank">https://en.macromicro.me/collections/9/us-market-relative/34339/us-treasury-general-account</a>
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- 白银观察标签内容 -->
         <div id="silver" class="tab-content">
             <div class="upload-area">
                 <h2>白银库存分析</h2>
                 <h2 class="link-title">
                     Link:
-                    <a href="https://www.cmegroup.com/clearing/operations-and-deliveries/registrar-reports.html" target="_blank">
+                    <a href="https://www.cmegroup.com/clearing/operations-and-deliveries/registrar-reports.html"
+                        target="_blank">
                         CME持仓变化
                     </a>
                     |
@@ -469,7 +534,7 @@
                 </h2>
                 <form id="silverForm" enctype="multipart/form-data">
                     <input type="file" id="silverFileInput" name="file" accept=".xlsx, .xls" required>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="etfStart">期初持仓 (oz):</label>
@@ -480,21 +545,21 @@
                             <input type="number" id="etfNow" name="etfNow" value="475500000" step="1">
                         </div>
                     </div>
-                    
+
                     <button type="submit">分析白银库存</button>
                 </form>
             </div>
-            
+
             <div id="silverLoading" class="loading hidden">
                 <div class="spinner"></div>
                 <p>正在分析，请稍候...</p>
             </div>
-            
+
             <div id="silverResult" class="hidden">
                 <h3>分析结果</h3>
                 <pre id="silverAnalysis" style="white-space: pre-wrap; font-family: monospace;"></pre>
             </div>
-            
+
             <div id="silverError" class="error hidden"></div>
         </div>
     </div>
@@ -506,7 +571,7 @@
                 // 移除所有活动状态
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
+
                 // 添加当前活动状态
                 tab.classList.add('active');
                 const tabId = tab.getAttribute('data-tab');
@@ -532,7 +597,7 @@
         // 白银库存分析表单提交事件
         document.getElementById('silverForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             const fileInput = document.getElementById('silverFileInput');
             const etfStartInput = document.getElementById('etfStart');
             const etfNowInput = document.getElementById('etfNow');
@@ -540,31 +605,31 @@
             const loadingDiv = document.getElementById('silverLoading');
             const errorDiv = document.getElementById('silverError');
             const analysisPre = document.getElementById('silverAnalysis');
-            
+
             // 隐藏结果和错误信息，显示加载状态
             resultDiv.classList.add('hidden');
             errorDiv.classList.add('hidden');
             loadingDiv.classList.remove('hidden');
-            
+
             if (!fileInput.files[0]) {
                 showError('请选择一个文件', errorDiv);
                 loadingDiv.classList.add('hidden');
                 return;
             }
-            
+
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
             formData.append('etfStart', etfStartInput.value || '0');
             formData.append('etfNow', etfNowInput.value || '0');
-            
+
             try {
                 const response = await fetch('/api/analyze-silver', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     // 显示分析结果
                     analysisPre.textContent = data.result.explanation;
@@ -578,7 +643,7 @@
                 loadingDiv.classList.add('hidden');
             }
         });
-        
+
         // 显示错误信息的辅助函数
         function showError(message, errorElement) {
             errorElement.textContent = message;
@@ -614,13 +679,13 @@
             formData.append('maxStrike', maxStrikeInput.value);
             formData.append('priceAdjustment', priceAdjustmentInput.value);
             formData.append('selectedMonth', selectedMonthInput.value);
-            
+
             // // 添加中性价值计算所需的参数
             // const goldPriceInput = document.getElementById('goldPrice');
             // const expiryDateInput = document.getElementById('expiryDate');
             // const sofrRateInput = document.getElementById('sofrRate');
             // const impliedVolatilityInput = document.getElementById('impliedVolatility');
-            
+
             // if (goldPriceInput.value) formData.append('goldPrice', goldPriceInput.value);
             // if (expiryDateInput.value) formData.append('expiryDate', expiryDateInput.value);
             // if (sofrRateInput.value) formData.append('sofrRate', sofrRateInput.value);
@@ -678,20 +743,20 @@
                 formData.append('selectedMonth', selectedMonth);
                 formData.append('minStrike', minStrikeInput.value);
                 formData.append('maxStrike', maxStrikeInput.value);
-                
+
                 // // 添加中性价值计算所需的参数
                 // const goldPriceInput = document.getElementById('goldPrice');
                 // const expiryDateInput = document.getElementById('expiryDate');
                 // const sofrRateInput = document.getElementById('sofrRate');
                 // const impliedVolatilityInput = document.getElementById('impliedVolatility');
-                
+
                 const requestData = {
                     sessionId: serverData.sessionId,
                     selectedMonth: selectedMonth,
                     minStrike: minStrikeInput.value,
                     maxStrike: maxStrikeInput.value
                 };
-                
+
                 // if (goldPriceInput.value) requestData.goldPrice = goldPriceInput.value;
                 // if (expiryDateInput.value) requestData.expiryDate = expiryDateInput.value;
                 // if (sofrRateInput.value) requestData.sofrRate = sofrRateInput.value;
@@ -751,7 +816,7 @@
         function displayResults(data) {
             // 显示摘要信息
             document.getElementById('maxPainStrike').textContent = data.maxPain.strike;
-            
+
             // // 显示中性价值（如果存在）
             // const neutralValueElement = document.getElementById('neutralValue');
             // if (data.neutralValue) {
@@ -812,7 +877,7 @@
                         nameTextStyle: {
                             color: '#333',
                         },
-                        splitLine: { 
+                        splitLine: {
                             show: true,
                             lineStyle: {
                                 color: '#eee'
@@ -936,7 +1001,7 @@
                         nameTextStyle: {
                             color: '#333',
                         },
-                        splitLine: { 
+                        splitLine: {
                             show: true,
                             lineStyle: {
                                 color: '#eee'
@@ -1101,6 +1166,97 @@
                 putChart.resize({ width: chartWidth, height: chartHeight });
             }, 100);
         }
+
+        // 添加获取附近期权数据的功能
+        document.getElementById('getOptionDataBtn').addEventListener('click', function () {
+            if (!serverData || !serverData.commonStrikes) {
+                showError('请先计算Max Pain数据');
+                return;
+            }
+
+            const minStrike = parseFloat(document.getElementById('minStrikeFilter').value);
+            const maxStrike = parseFloat(document.getElementById('maxStrikeFilter').value);
+
+            if (isNaN(minStrike) || isNaN(maxStrike)) {
+                showError('请输入最小行权价和最大行权价');
+                return;
+            }
+
+            // 过滤数据
+            const filteredData = filterOptionsData(serverData.commonStrikes, minStrike, maxStrike);
+
+            // 显示结果
+            displayFilteredOptions(filteredData);
+        });
+
+        // 过滤期权数据的函数
+        function filterOptionsData(data, minStrike, maxStrike) {
+            const result = {
+                calls: [],   // Call期权
+                puts: []     // Put期权
+            };
+
+            // 筛选出在指定范围内的数据
+            const filtered = data.filter(item =>
+                item.Strike >= minStrike && item.Strike <= maxStrike
+            );
+
+            // 分类Call和Put期权
+            filtered.forEach(item => {
+                // Call期权
+                if (item.Call_Change < -10 || item.Call_Change > 10 || item.Call_OI > 900) {
+                    result.calls.push({
+                        strike: item.Strike,
+                        oi: item.Call_OI,
+                        change: item.Call_Change
+                    });
+                }
+
+                // Put期权
+                if (item.Put_Change < -10 || item.Put_Change > 10 || item.Put_OI > 900) {
+                    result.puts.push({
+                        strike: item.Strike,
+                        oi: item.Put_OI,
+                        change: item.Put_Change
+                    });
+                }
+            });
+
+            return result;
+        }
+
+        // 显示过滤后的期权数据
+        function displayFilteredOptions(data) {
+            const resultContainer = document.getElementById('filteredOptionsResult');
+            const jsonContainer = document.getElementById('filteredOptionsJson');
+
+            // 显示结果容器
+            resultContainer.classList.remove('hidden');
+
+            // 格式化为JSON并显示
+            const formattedJson = JSON.stringify(data, null, 2);
+            jsonContainer.textContent = formattedJson;
+        }
+
+        // 添加复制JSON功能
+        document.getElementById('copyJsonBtn').addEventListener('click', function () {
+            const jsonText = document.getElementById('filteredOptionsJson').textContent;
+            if (!jsonText) {
+                showError('没有可复制的数据');
+                return;
+            }
+
+            navigator.clipboard.writeText(jsonText).then(() => {
+                // 显示复制成功的提示
+                const originalText = this.textContent;
+                this.textContent = '已复制!';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                showError('复制失败: ' + err);
+            });
+        });
 
     </script>
 </body>
