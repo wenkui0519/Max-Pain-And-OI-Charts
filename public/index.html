@@ -256,6 +256,40 @@
             border: 1px solid #fed7d7;
         }
 
+        /* 新增的附近期权数据区域样式 */
+        #filteredOptionsResult {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+
+        #filteredOptionsResult h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        #filteredOptionsJson {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        #copyJsonBtn {
+            background-color: #17a2b8;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        #copyJsonBtn:hover {
+            background-color: #138496;
+        }
+
         /* 美联储数据分析样式 */
         .fed-analysis {
             padding: 20px;
@@ -317,7 +351,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="minStrike">最小执行价:</label>
-                            <input type="number" id="minStrike" name="minStrike" value="3700">
+                            <input type="number" id="minStrike" name="minStrike" value="3800">
                         </div>
                         <div class="form-group">
                             <label for="maxStrike">最大执行价:</label>
@@ -382,6 +416,27 @@
                         <h3 class="chart-header">Put 期权数据</h3>
                         <div id="putChart" style="width:100%; height:100%;"></div>
                     </div>
+                </div>
+
+                <!-- 获取指定周期期权数据 -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="minStrikeFilter">最小行权价:</label>
+                        <input type="number" id="minStrikeFilter" name="minStrikeFilter" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="maxStrikeFilter">最大行权价:</label>
+                        <input type="number" id="maxStrikeFilter" name="maxStrikeFilter" step="0.01">
+                    </div>
+                    <button type="button" id="getOptionDataBtn">获取附近期权</button>
+                </div>
+                <div id="filteredOptionsResult" class="hidden">
+                    <h3>指定范围内的期权数据</h3>
+                    <div class="form-row" style="margin-bottom: 10px;">
+                        <button id="copyJsonBtn" type="button">复制JSON</button>
+                    </div>
+                    <pre id="filteredOptionsJson"
+                        style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;"></pre>
                 </div>
             </div>
             <div id="error" class="error hidden"></div>
@@ -1067,6 +1122,97 @@
                 }
             }, 100);
         }
+
+        // 添加获取附近期权数据的功能
+        document.getElementById('getOptionDataBtn').addEventListener('click', function () {
+            if (!serverData || !serverData.commonStrikes) {
+                showError('请先计算Max Pain数据');
+                return;
+            }
+
+            const minStrike = parseFloat(document.getElementById('minStrikeFilter').value);
+            const maxStrike = parseFloat(document.getElementById('maxStrikeFilter').value);
+
+            if (isNaN(minStrike) || isNaN(maxStrike)) {
+                showError('请输入最小行权价和最大行权价');
+                return;
+            }
+
+            // 过滤数据
+            const filteredData = filterOptionsData(serverData.commonStrikes, minStrike, maxStrike);
+
+            // 显示结果
+            displayFilteredOptions(filteredData);
+        });
+
+        // 过滤期权数据的函数
+        function filterOptionsData(data, minStrike, maxStrike) {
+            const result = {
+                calls: [],   // Call期权
+                puts: []     // Put期权
+            };
+
+            // 筛选出在指定范围内的数据
+            const filtered = data.filter(item =>
+                item.Strike >= minStrike && item.Strike <= maxStrike
+            );
+
+            // 分类Call和Put期权
+            filtered.forEach(item => {
+                // Call期权
+                if (item.Call_Change < -10 || item.Call_Change > 10 || item.Call_OI > 900) {
+                    result.calls.push({
+                        strike: item.Strike,
+                        oi: item.Call_OI,
+                        change: item.Call_Change
+                    });
+                }
+
+                // Put期权
+                if (item.Put_Change < -10 || item.Put_Change > 10 || item.Put_OI > 900) {
+                    result.puts.push({
+                        strike: item.Strike,
+                        oi: item.Put_OI,
+                        change: item.Put_Change
+                    });
+                }
+            });
+
+            return result;
+        }
+
+        // 显示过滤后的期权数据
+        function displayFilteredOptions(data) {
+            const resultContainer = document.getElementById('filteredOptionsResult');
+            const jsonContainer = document.getElementById('filteredOptionsJson');
+
+            // 显示结果容器
+            resultContainer.classList.remove('hidden');
+
+            // 格式化为JSON并显示
+            const formattedJson = JSON.stringify(data, null, 2);
+            jsonContainer.textContent = formattedJson;
+        }
+
+        // 添加复制JSON功能
+        document.getElementById('copyJsonBtn').addEventListener('click', function () {
+            const jsonText = document.getElementById('filteredOptionsJson').textContent;
+            if (!jsonText) {
+                showError('没有可复制的数据');
+                return;
+            }
+
+            navigator.clipboard.writeText(jsonText).then(() => {
+                // 显示复制成功的提示
+                const originalText = this.textContent;
+                this.textContent = '已复制!';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                showError('复制失败: ' + err);
+            });
+        });
 
     </script>
 </body>

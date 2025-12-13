@@ -89,7 +89,7 @@ const calculateMonth = (req, res) => {
     const result = calculateMaxPain(
       monthData.calls, 
       monthData.puts, 
-      minStrike ? parseFloat(minStrike) : 3700, 
+      minStrike ? parseFloat(minStrike) : 3800, 
       maxStrike ? parseFloat(maxStrike) : 4400
     );
     
