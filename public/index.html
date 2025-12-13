@@ -830,257 +830,196 @@
         }
 
         function drawCharts(data) {
-            // 获取价格调整值
+            // // 获取价格调整值
+            // const priceAdjustment = parseFloat(document.getElementById('priceAdjustment').value) || 0;
+
+            // // 准备Call图表数据，并应用价格调整
+            // const callStrikes = data.map(item => item.Strike - priceAdjustment);
+            // const callOI = data.map(item => item.Call_OI);
+            // const callChange = data.map(item => item.Call_Change);
+
+            // // 准备Put图表数据，并应用价格调整
+            // const putStrikes = data.map(item => item.Strike - priceAdjustment);
+            // const putOI = data.map(item => item.Put_OI);
+            // const putChange = data.map(item => item.Put_Change);
+            // --- 1. 数据处理 ---
+            const cleanNum = (val) => {
+                if (val === null || val === undefined || val === '') return 0;
+                if (typeof val === 'number') return val;
+                let str = String(val).replace(/,/g, '');
+                return parseFloat(str) || 0;
+            };
+
+            // 排序
+            data.sort((a, b) => cleanNum(a.Strike) - cleanNum(b.Strike));
+
             const priceAdjustment = parseFloat(document.getElementById('priceAdjustment').value) || 0;
 
-            // 准备Call图表数据，并应用价格调整
-            const callStrikes = data.map(item => item.Strike - priceAdjustment);
-            const callOI = data.map(item => item.Call_OI);
-            const callChange = data.map(item => item.Call_Change);
+            const callStrikes = data.map(item => cleanNum(item.Strike) - priceAdjustment);
+            const callOI = data.map(item => cleanNum(item.Call_OI));
+            const callChange = data.map(item => cleanNum(item.Call_Change));
 
-            // Call图表配置
+            const putStrikes = data.map(item => cleanNum(item.Strike) - priceAdjustment);
+            const putOI = data.map(item => cleanNum(item.Put_OI));
+            const putChange = data.map(item => cleanNum(item.Put_Change));
+
+            // 计算最大范围以居中
+            const maxCallChangeAbs = Math.max(...callChange.map(Math.abs)) || 10;
+            const callChangeLimit = Math.ceil(maxCallChangeAbs * 1.1);
+            const maxPutChangeAbs = Math.max(...putChange.map(Math.abs)) || 10;
+            const putChangeLimit = Math.ceil(maxPutChangeAbs * 1.1);
+
+             // --- 2. Call 配置 ---
             const callOption = {
-                // backgroundColor: '#1a1a1a', // 设置背景颜色为深色
-                color: ['#1f77b4', '#d62728'], // 更专业的蓝红色搭配
+                color: ['#1f77b4', '#d62728'],
                 tooltip: {
                     trigger: 'axis',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     borderColor: '#ccc',
-                    borderwidth: 2,
-                    textStyle: {
-                        color: '#333'
-                    }
+                    borderWidth: 1,
+                    textStyle: { color: '#333' }
                 },
                 legend: {
                     data: ['存量', '变动'],
-                    top: '5%',
-                    right: '10%', // 将图例移动到右侧
-                    textStyle: {
-                        fontSize: 12,
-                        color: '#333' // 图例文字颜色为白色
-                    }
+                    top: 5,         // 【修改】固定像素，不再用百分比
+                    right: 20,      // 【修改】固定像素
+                    textStyle: { color: '#333' }
                 },
                 grid: {
-                    left: '10%',
-                    right: '10%',
-                    bottom: '15%',
-                    top: '15%',
+                    left: 10,
+                    right: 10,
+                    bottom: 30,     // 【修改】底部留白固定
+                    top: 40,        // 【关键修改】头部留白改成固定40px，解决"头部太宽"的问题
                     containLabel: true
                 },
                 xAxis: [
                     {
                         type: 'value',
                         name: '存量',
-                        min: 0,
-                        max: 8000,
                         position: 'top',
-                        nameTextStyle: {
-                            color: '#333',
-                        },
-                        splitLine: {
-                            show: true,
-                            lineStyle: {
-                                color: '#eee'
-                            }
-                        }
-                    }, {
+                        min: 0,
+                        splitLine: { show: true, lineStyle: { color: '#eee' } },
+                        axisLabel: { color: '#333' }
+                    },
+                    {
                         type: 'value',
                         name: '变动',
                         nameLocation: 'middle',
                         nameGap: 30,
                         position: 'bottom',
-                        nameTextStyle: {
-                            color: '#333',
-                        },
-                        axisLabel: {
-                            formatter: '{value}',
-                            color: '#333' // x轴标签颜色为白色
-                        },
-                        min: -600,
-                        max: 600,
-                        axisLine: {
-                            lineStyle: {
-                                color: '#444' // x轴线颜色为浅灰色
-                            }
-                        }
+                        min: -callChangeLimit,
+                        max: callChangeLimit,
+                        axisLabel: { formatter: '{value}', color: '#333' },
+                        axisLine: { lineStyle: { color: '#444' } },
+                        splitLine: { show: false }
                     }
                 ],
                 yAxis: {
                     type: 'category',
                     data: callStrikes,
-                    axisLabel: {
-                        rotate: 0,
-                        fontSize: 10,
-                        color: '#333', // y轴标签颜色为白色
-                    },
-                    axisLine: {
-                        lineStyle: {
-                            color: '#444' // y轴线颜色为浅灰色
-                        }
-                    },
-                    nameTextStyle: {
-                        color: '#333'
-                    },
-                    splitLine: {
-                        show: true,
-                        lineStyle: {
-                            color: ['#eee']
-                        }
-                    }
+                    axisLabel: { fontSize: 10, color: '#333' },
+                    axisLine: { lineStyle: { color: '#444' } },
+                    splitLine: { show: true, lineStyle: { color: ['#eee'] } }
                 },
                 series: [
                     {
                         name: '存量',
                         type: 'line',
                         data: callOI,
-                        smooth: true,
+                        smooth: false,
                         showSymbol: false,
+                        connectNulls: true,
                         xAxisIndex: 0,
-                        lineStyle: {
-                            width: 2,
-                            color: '#1f77b4' // 使用更专业的蓝色
-                        },
-                        itemStyle: {
-                            color: '#1f77b4'
-                        }
+                        lineStyle: { width: 2, color: '#1f77b4' },
+                        itemStyle: { color: '#1f77b4' }
                     },
                     {
                         name: '变动',
                         type: 'bar',
                         data: callChange,
-                        barWidth: '60%',
                         xAxisIndex: 1,
-                        itemStyle: {
-                            color: '#d62728' // 使用更专业的红色
-                        }
+                        itemStyle: { color: '#d62728' },
+                        barWidth: '60%'
                     }
                 ]
             };
 
-            // 准备Put图表数据，并应用价格调整
-            const putStrikes = data.map(item => item.Strike - priceAdjustment);
-            const putOI = data.map(item => item.Put_OI);
-            const putChange = data.map(item => item.Put_Change);
-
-            // Put图表配置
+            // --- 3. Put 配置 ---
             const putOption = {
-                // backgroundColor: '#1a1a1a', // 设置背景颜色为深色
-                color: ['#1f77b4', '#d62728'], // 更专业的蓝红色搭配
+                color: ['#1f77b4', '#d62728'],
                 tooltip: {
                     trigger: 'axis',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     borderColor: '#ccc',
-                    borderwidth: 2,
-                    textStyle: {
-                        color: '#333'
-                    }
+                    borderWidth: 1,
+                    textStyle: { color: '#333' }
                 },
                 legend: {
                     data: ['存量', '变动'],
-                    top: '5%',
-                    right: '10%', // 将图例移动到右侧
-                    textStyle: {
-                        fontSize: 12,
-                        color: '#333' // 图例文字颜色为白色
-                    }
+                    top: 5,
+                    right: 20,
+                    textStyle: { color: '#333' }
                 },
                 grid: {
-                    left: '10%',
-                    right: '10%',
-                    bottom: '15%',
-                    top: '15%',
+                    left: 10,
+                    right: 10,
+                    bottom: 30,
+                    top: 40,      // 【关键修改】头部固定高度
                     containLabel: true
                 },
                 xAxis: [
                     {
                         type: 'value',
                         name: '存量',
-                        min: 0,
-                        max: 8000,
                         position: 'top',
-                        nameTextStyle: {
-                            color: '#333',
-                        },
-                        splitLine: {
-                            show: true,
-                            lineStyle: {
-                                color: '#eee'
-                            }
-                        }
-                    }, {
+                        min: 0,
+                        splitLine: { show: true, lineStyle: { color: '#eee' } },
+                        axisLabel: { color: '#333' }
+                    },
+                    {
                         type: 'value',
                         name: '变动',
                         nameLocation: 'middle',
                         nameGap: 30,
                         position: 'bottom',
-                        nameTextStyle: {
-                            color: '#333',
-                        },
-                        axisLabel: {
-                            formatter: '{value}',
-                            color: '#333' // x轴标签颜色为白色
-                        },
-                        min: -600,
-                        max: 600,
-                        axisLine: {
-                            lineStyle: {
-                                color: '#444' // x轴线颜色为浅灰色
-                            }
-                        }
+                        min: -putChangeLimit,
+                        max: putChangeLimit,
+                        axisLabel: { formatter: '{value}', color: '#333' },
+                        axisLine: { lineStyle: { color: '#444' } },
+                        splitLine: { show: false }
                     }
                 ],
                 yAxis: {
                     type: 'category',
                     data: putStrikes,
-                    axisLabel: {
-                        rotate: 0,
-                        fontSize: 10,
-                        color: '#333', // y轴标签颜色为白色
-                    },
-                    axisLine: {
-                        lineStyle: {
-                            color: '#444' // y轴线颜色为浅灰色
-                        }
-                    },
-                    nameTextStyle: {
-                        color: '#333'
-                    },
-                    splitLine: {
-                        show: true,
-                        lineStyle: {
-                            color: ['#eee']
-                        }
-                    }
+                    axisLabel: { fontSize: 10, color: '#333' },
+                    axisLine: { lineStyle: { color: '#444' } },
+                    splitLine: { show: true, lineStyle: { color: ['#eee'] } }
                 },
                 series: [
                     {
                         name: '存量',
                         type: 'line',
                         data: putOI,
-                        smooth: true,
+                        smooth: false,
                         showSymbol: false,
+                        connectNulls: true,
                         xAxisIndex: 0,
-                        lineStyle: {
-                            width: 2,
-                            color: '#1f77b4' // 使用更专业的蓝色
-                        },
-                        itemStyle: {
-                            color: '#1f77b4'
-                        }
+                        lineStyle: { width: 2, color: '#1f77b4' },
+                        itemStyle: { color: '#1f77b4' }
                     },
                     {
                         name: '变动',
                         type: 'bar',
                         data: putChange,
-                        barWidth: '60%',
                         xAxisIndex: 1,
-                        itemStyle: {
-                            color: '#d62728' // 使用更专业的红色
-                        }
+                        itemStyle: { color: '#d62728' },
+                        barWidth: '60%'
                     }
                 ]
             };
 
+         
             // 渲染图表
             callChart.setOption(callOption, true);
             putChart.setOption(putOption, true);
@@ -1151,19 +1090,34 @@
             });
 
             // 确保图表在渲染后正确调整大小并保持高度一致
+            // setTimeout(() => {
+            //     // 先获取容器宽度
+            //     const chartWidth = document.querySelector('.chart-wrapper').clientWidth;
+
+            //     // 设置固定高度（基于最小容器高度）
+            //     const chartHeight = Math.min(
+            //         document.getElementById('callChart').parentElement.clientHeight,
+            //         document.getElementById('putChart').parentElement.clientHeight
+            //     );
+
+            //     // 为两个图表设置相同的尺寸
+            //     callChart.resize({ width: chartWidth, height: chartHeight });
+            //     putChart.resize({ width: chartWidth, height: chartHeight });
+            // }, 100);
+            
             setTimeout(() => {
-                // 先获取容器宽度
-                const chartWidth = document.querySelector('.chart-wrapper').clientWidth;
+                const wrapper = document.querySelector('.chart-wrapper');
+                if (wrapper) {
+                    const chartWidth = wrapper.clientWidth;
 
-                // 设置固定高度（基于最小容器高度）
-                const chartHeight = Math.min(
-                    document.getElementById('callChart').parentElement.clientHeight,
-                    document.getElementById('putChart').parentElement.clientHeight
-                );
+                    // 【关键修改】
+                    // 之前是 * 25，现在改成 * 10
+                    // 这会让行与行之间非常紧凑，大约是之前的 1/2.5
+                    const autoHeight = Math.max(500, data.length * 10);
 
-                // 为两个图表设置相同的尺寸
-                callChart.resize({ width: chartWidth, height: chartHeight });
-                putChart.resize({ width: chartWidth, height: chartHeight });
+                    callChart.resize({ width: chartWidth, height: autoHeight });
+                    putChart.resize({ width: chartWidth, height: autoHeight });
+                }
             }, 100);
         }
 
