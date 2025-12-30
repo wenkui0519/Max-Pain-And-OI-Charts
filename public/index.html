@@ -830,38 +830,18 @@
         }
 
         function drawCharts(data) {
-            // // 获取价格调整值
-            // const priceAdjustment = parseFloat(document.getElementById('priceAdjustment').value) || 0;
-
-            // // 准备Call图表数据，并应用价格调整
-            // const callStrikes = data.map(item => item.Strike - priceAdjustment);
-            // const callOI = data.map(item => item.Call_OI);
-            // const callChange = data.map(item => item.Call_Change);
-
-            // // 准备Put图表数据，并应用价格调整
-            // const putStrikes = data.map(item => item.Strike - priceAdjustment);
-            // const putOI = data.map(item => item.Put_OI);
-            // const putChange = data.map(item => item.Put_Change);
-            // --- 1. 数据处理 ---
-            const cleanNum = (val) => {
-                if (val === null || val === undefined || val === '') return 0;
-                if (typeof val === 'number') return val;
-                let str = String(val).replace(/,/g, '');
-                return parseFloat(str) || 0;
-            };
-
             // 排序
-            data.sort((a, b) => cleanNum(a.Strike) - cleanNum(b.Strike));
+            data.sort((a, b) => a.Strike - b.Strike);
 
             const priceAdjustment = parseFloat(document.getElementById('priceAdjustment').value) || 0;
 
-            const callStrikes = data.map(item => cleanNum(item.Strike) - priceAdjustment);
-            const callOI = data.map(item => cleanNum(item.Call_OI));
-            const callChange = data.map(item => cleanNum(item.Call_Change));
+            const callStrikes = data.map(item => item.Strike - priceAdjustment);
+            const callOI = data.map(item => item.Call_OI);
+            const callChange = data.map(item => item.Call_Change);
 
-            const putStrikes = data.map(item => cleanNum(item.Strike) - priceAdjustment);
-            const putOI = data.map(item => cleanNum(item.Put_OI));
-            const putChange = data.map(item => cleanNum(item.Put_Change));
+            const putStrikes = data.map(item => item.Strike - priceAdjustment);
+            const putOI = data.map(item => item.Put_OI);
+            const putChange = data.map(item => item.Put_Change);
 
             // 计算最大范围以居中
             const maxCallChangeAbs = Math.max(...callChange.map(Math.abs)) || 10;
@@ -880,7 +860,7 @@
             const maxOI = Math.max(maxCallOI, maxPutOI);
             const oiLimit = Math.ceil(maxOI * 1.1); // 添加10%的边距
 
-            // --- 2. Call 配置 ---
+            // Call 配置 ---
             const callOption = {
                 color: ['#3290d0', '#e74c3c'],
                 backgroundColor: 'rgba(255, 255, 255, 0.9)', // 轻微透明背景
@@ -915,11 +895,11 @@
                         position: 'top',
                         min: 0,
                         max: oiLimit,
-                        splitLine: { 
-                            show: true, 
-                            lineStyle: { 
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
                                 color: '#f0f0f0' // 更柔和的网格线
-                            } 
+                            }
                         },
                         axisLine: {
                             lineStyle: {
@@ -938,30 +918,30 @@
                         max: callChangeLimit,
                         splitNumber: 5, // 控制刻度数量
                         axisLabel: { formatter: '{value}', color: '#666' },
-                        axisLine: { 
-                            lineStyle: { 
+                        axisLine: {
+                            lineStyle: {
                                 color: '#d9d9d9' // 坐标轴线颜色
-                            } 
+                            }
                         },
-                        splitLine: { 
-                            show: false 
+                        splitLine: {
+                            show: false
                         }
                     }
                 ],
                 yAxis: {
                     type: 'category',
                     data: callStrikes,
-                    axisLine: { 
-                        lineStyle: { 
+                    axisLine: {
+                        lineStyle: {
                             color: '#d9d9d9' // 坐标轴线颜色
-                        } 
+                        }
                     },
                     axisLabel: { fontSize: 10, color: '#666' },
-                    splitLine: { 
-                        show: true, 
-                        lineStyle: { 
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
                             color: '#f0f0f0' // 更柔和的网格线
-                        } 
+                        }
                     }
                 },
                 series: [
@@ -987,7 +967,7 @@
                 ]
             };
 
-            // --- 3. Put 配置 ---
+            // Put 配置 ---
             const putOption = {
                 color: ['#3290d0', '#e74c3c'],
                 backgroundColor: 'rgba(255, 255, 255, 0.9)', // 轻微透明背景
@@ -1022,11 +1002,11 @@
                         position: 'top',
                         min: 0,
                         max: oiLimit,
-                        splitLine: { 
-                            show: true, 
-                            lineStyle: { 
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
                                 color: '#f0f0f0' // 更柔和的网格线
-                            } 
+                            }
                         },
                         axisLine: {
                             lineStyle: {
@@ -1045,30 +1025,30 @@
                         max: putChangeLimit,
                         splitNumber: 5, // 控制刻度数量
                         axisLabel: { formatter: '{value}', color: '#666' },
-                        axisLine: { 
-                            lineStyle: { 
+                        axisLine: {
+                            lineStyle: {
                                 color: '#d9d9d9' // 坐标轴线颜色
-                            } 
+                            }
                         },
-                        splitLine: { 
-                            show: false 
+                        splitLine: {
+                            show: false
                         }
                     }
                 ],
                 yAxis: {
                     type: 'category',
                     data: putStrikes,
-                    axisLine: { 
-                        lineStyle: { 
+                    axisLine: {
+                        lineStyle: {
                             color: '#d9d9d9' // 坐标轴线颜色
-                        } 
+                        }
                     },
                     axisLabel: { fontSize: 10, color: '#666' },
-                    splitLine: { 
-                        show: true, 
-                        lineStyle: { 
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
                             color: '#f0f0f0' // 更柔和的网格线
-                        } 
+                        }
                     }
                 },
                 series: [
@@ -1164,23 +1144,7 @@
                 }
             });
 
-            // 确保图表在渲染后正确调整大小并保持高度一致
-            // setTimeout(() => {
-            //     // 先获取容器宽度
-            //     const chartWidth = document.querySelector('.chart-wrapper').clientWidth;
-
-            //     // 设置固定高度（基于最小容器高度）
-            //     const chartHeight = Math.min(
-            //         document.getElementById('callChart').parentElement.clientHeight,
-            //         document.getElementById('putChart').parentElement.clientHeight
-            //     );
-
-            //     // 为两个图表设置相同的尺寸
-            //     callChart.resize({ width: chartWidth, height: chartHeight });
-            //     putChart.resize({ width: chartWidth, height: chartHeight });
-            // }, 100);
-
-            setTimeout(() => {
+            let timer = setTimeout(() => {
                 const wrapper = document.querySelector('.chart-wrapper');
                 if (wrapper) {
                     const chartWidth = wrapper.clientWidth;
@@ -1193,6 +1157,8 @@
                     callChart.resize({ width: chartWidth, height: autoHeight });
                     putChart.resize({ width: chartWidth, height: autoHeight });
                 }
+                clearTimeout(timer);
+                timer = null;
             }, 100);
         }
 
