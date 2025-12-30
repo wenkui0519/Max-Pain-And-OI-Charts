@@ -882,26 +882,31 @@
 
             // --- 2. Call 配置 ---
             const callOption = {
-                color: ['#1f77b4', '#d62728'],
+                color: ['#3290d0', '#e74c3c'],
+                backgroundColor: 'rgba(255, 255, 255, 0.9)', // 轻微透明背景
                 tooltip: {
                     trigger: 'axis',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    borderColor: '#ccc',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    borderColor: '#d9d9d9',
                     borderWidth: 1,
-                    textStyle: { color: '#333' }
+                    textStyle: { color: '#333' },
+                    extraCssText: 'box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);'
                 },
                 legend: {
                     data: ['存量', '变动'],
                     top: 5,         // 固定像素，不再用百分比
                     right: 20,      // 固定像素
-                    textStyle: { color: '#333' }
+                    textStyle: { color: '#333' },
+                    borderColor: '#d9d9d9',
+                    borderWidth: 1
                 },
                 grid: {
                     left: 10,
                     right: 10,
                     bottom: 30,
                     top: 40,
-                    containLabel: true
+                    containLabel: true,
+                    borderColor: '#d9d9d9'
                 },
                 xAxis: [
                     {
@@ -910,8 +915,18 @@
                         position: 'top',
                         min: 0,
                         max: oiLimit,
-                        splitLine: { show: true, lineStyle: { color: '#eee' } },
-                        axisLabel: { color: '#333' }
+                        splitLine: { 
+                            show: true, 
+                            lineStyle: { 
+                                color: '#f0f0f0' // 更柔和的网格线
+                            } 
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#d9d9d9' // 坐标轴线颜色
+                            }
+                        },
+                        axisLabel: { color: '#666' }
                     },
                     {
                         type: 'value',
@@ -921,17 +936,33 @@
                         position: 'bottom',
                         min: -callChangeLimit,
                         max: callChangeLimit,
-                        axisLabel: { formatter: '{value}', color: '#333' },
-                        axisLine: { lineStyle: { color: '#444' } },
-                        splitLine: { show: false }
+                        splitNumber: 5, // 控制刻度数量
+                        axisLabel: { formatter: '{value}', color: '#666' },
+                        axisLine: { 
+                            lineStyle: { 
+                                color: '#d9d9d9' // 坐标轴线颜色
+                            } 
+                        },
+                        splitLine: { 
+                            show: false 
+                        }
                     }
                 ],
                 yAxis: {
                     type: 'category',
                     data: callStrikes,
-                    axisLabel: { fontSize: 10, color: '#333' },
-                    axisLine: { lineStyle: { color: '#444' } },
-                    splitLine: { show: true, lineStyle: { color: ['#eee'] } }
+                    axisLine: { 
+                        lineStyle: { 
+                            color: '#d9d9d9' // 坐标轴线颜色
+                        } 
+                    },
+                    axisLabel: { fontSize: 10, color: '#666' },
+                    splitLine: { 
+                        show: true, 
+                        lineStyle: { 
+                            color: '#f0f0f0' // 更柔和的网格线
+                        } 
+                    }
                 },
                 series: [
                     {
@@ -942,15 +973,15 @@
                         showSymbol: false,
                         connectNulls: true,
                         xAxisIndex: 0,
-                        lineStyle: { width: 2, color: '#1f77b4' },
-                        itemStyle: { color: '#1f77b4' }
+                        lineStyle: { width: 2, color: '#3290d0' },
+                        itemStyle: { color: '#3290d0' }
                     },
                     {
                         name: '变动',
                         type: 'bar',
                         data: callChange,
                         xAxisIndex: 1,
-                        itemStyle: { color: '#d62728' },
+                        itemStyle: { color: '#e74c3c' },
                         barWidth: '60%'
                     }
                 ]
@@ -958,26 +989,31 @@
 
             // --- 3. Put 配置 ---
             const putOption = {
-                color: ['#1f77b4', '#d62728'],
+                color: ['#3290d0', '#e74c3c'],
+                backgroundColor: 'rgba(255, 255, 255, 0.9)', // 轻微透明背景
                 tooltip: {
                     trigger: 'axis',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    borderColor: '#ccc',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    borderColor: '#d9d9d9',
                     borderWidth: 1,
-                    textStyle: { color: '#333' }
+                    textStyle: { color: '#333' },
+                    extraCssText: 'box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);'
                 },
                 legend: {
                     data: ['存量', '变动'],
                     top: 5,
                     right: 20,
-                    textStyle: { color: '#333' }
+                    textStyle: { color: '#333' },
+                    borderColor: '#d9d9d9',
+                    borderWidth: 1
                 },
                 grid: {
                     left: 10,
                     right: 10,
                     bottom: 30,
                     top: 40,      // 头部固定高度
-                    containLabel: true
+                    containLabel: true,
+                    borderColor: '#d9d9d9'
                 },
                 xAxis: [
                     {
@@ -986,8 +1022,18 @@
                         position: 'top',
                         min: 0,
                         max: oiLimit,
-                        splitLine: { show: true, lineStyle: { color: '#eee' } },
-                        axisLabel: { color: '#333' }
+                        splitLine: { 
+                            show: true, 
+                            lineStyle: { 
+                                color: '#f0f0f0' // 更柔和的网格线
+                            } 
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#d9d9d9' // 坐标轴线颜色
+                            }
+                        },
+                        axisLabel: { color: '#666' }
                     },
                     {
                         type: 'value',
@@ -997,17 +1043,33 @@
                         position: 'bottom',
                         min: -putChangeLimit,
                         max: putChangeLimit,
-                        axisLabel: { formatter: '{value}', color: '#333' },
-                        axisLine: { lineStyle: { color: '#444' } },
-                        splitLine: { show: false }
+                        splitNumber: 5, // 控制刻度数量
+                        axisLabel: { formatter: '{value}', color: '#666' },
+                        axisLine: { 
+                            lineStyle: { 
+                                color: '#d9d9d9' // 坐标轴线颜色
+                            } 
+                        },
+                        splitLine: { 
+                            show: false 
+                        }
                     }
                 ],
                 yAxis: {
                     type: 'category',
                     data: putStrikes,
-                    axisLabel: { fontSize: 10, color: '#333' },
-                    axisLine: { lineStyle: { color: '#444' } },
-                    splitLine: { show: true, lineStyle: { color: ['#eee'] } }
+                    axisLine: { 
+                        lineStyle: { 
+                            color: '#d9d9d9' // 坐标轴线颜色
+                        } 
+                    },
+                    axisLabel: { fontSize: 10, color: '#666' },
+                    splitLine: { 
+                        show: true, 
+                        lineStyle: { 
+                            color: '#f0f0f0' // 更柔和的网格线
+                        } 
+                    }
                 },
                 series: [
                     {
@@ -1018,15 +1080,15 @@
                         showSymbol: false,
                         connectNulls: true,
                         xAxisIndex: 0,
-                        lineStyle: { width: 2, color: '#1f77b4' },
-                        itemStyle: { color: '#1f77b4' }
+                        lineStyle: { width: 2, color: '#3290d0' },
+                        itemStyle: { color: '#3290d0' }
                     },
                     {
                         name: '变动',
                         type: 'bar',
                         data: putChange,
                         xAxisIndex: 1,
-                        itemStyle: { color: '#d62728' },
+                        itemStyle: { color: '#e74c3c' },
                         barWidth: '60%'
                     }
                 ]
