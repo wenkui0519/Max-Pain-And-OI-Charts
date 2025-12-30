@@ -351,11 +351,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="minStrike">最小执行价:</label>
-                            <input type="number" id="minStrike" name="minStrike" value="3800">
+                            <input type="number" id="minStrike" name="minStrike" value="4200">
                         </div>
                         <div class="form-group">
                             <label for="maxStrike">最大执行价:</label>
-                            <input type="number" id="maxStrike" name="maxStrike" value="4400">
+                            <input type="number" id="maxStrike" name="maxStrike" value="4600">
                         </div>
                     </div>
 
@@ -410,11 +410,11 @@
                 <div class="charts-container">
                     <div class="chart-wrapper">
                         <h3 class="chart-header">Call 期权数据</h3>
-                        <div id="callChart" style="width:100%; height:100%;"></div>
+                        <div id="callChart" style="width:100%; height:calc(100% - 57px);"></div>
                     </div>
                     <div class="chart-wrapper">
                         <h3 class="chart-header">Put 期权数据</h3>
-                        <div id="putChart" style="width:100%; height:100%;"></div>
+                        <div id="putChart" style="width:100%; height:calc(100% - 57px)"></div>
                     </div>
                 </div>
 
@@ -865,11 +865,22 @@
 
             // 计算最大范围以居中
             const maxCallChangeAbs = Math.max(...callChange.map(Math.abs)) || 10;
-            const callChangeLimit = Math.ceil(maxCallChangeAbs * 1.1);
             const maxPutChangeAbs = Math.max(...putChange.map(Math.abs)) || 10;
-            const putChangeLimit = Math.ceil(maxPutChangeAbs * 1.1);
+            let callChangeLimit = Math.ceil(maxCallChangeAbs * 1.1);
+            let putChangeLimit = Math.ceil(maxPutChangeAbs * 1.1);
+            if (maxCallChangeAbs > maxPutChangeAbs) {
+                putChangeLimit = callChangeLimit;
+            } else {
+                callChangeLimit = putChangeLimit;
+            }
 
-             // --- 2. Call 配置 ---
+            // 计算Call和Put的存量最大值，确保两个图表的x轴范围一致
+            const maxCallOI = Math.max(...callOI) || 0;
+            const maxPutOI = Math.max(...putOI) || 0;
+            const maxOI = Math.max(maxCallOI, maxPutOI);
+            const oiLimit = Math.ceil(maxOI * 1.1); // 添加10%的边距
+
+            // --- 2. Call 配置 ---
             const callOption = {
                 color: ['#1f77b4', '#d62728'],
                 tooltip: {
@@ -881,15 +892,15 @@
                 },
                 legend: {
                     data: ['存量', '变动'],
-                    top: 5,         // 【修改】固定像素，不再用百分比
-                    right: 20,      // 【修改】固定像素
+                    top: 5,         // 固定像素，不再用百分比
+                    right: 20,      // 固定像素
                     textStyle: { color: '#333' }
                 },
                 grid: {
                     left: 10,
                     right: 10,
-                    bottom: 30,     // 【修改】底部留白固定
-                    top: 40,        // 【关键修改】头部留白改成固定40px，解决"头部太宽"的问题
+                    bottom: 30,
+                    top: 40,
                     containLabel: true
                 },
                 xAxis: [
@@ -898,6 +909,7 @@
                         name: '存量',
                         position: 'top',
                         min: 0,
+                        max: oiLimit,
                         splitLine: { show: true, lineStyle: { color: '#eee' } },
                         axisLabel: { color: '#333' }
                     },
@@ -964,7 +976,7 @@
                     left: 10,
                     right: 10,
                     bottom: 30,
-                    top: 40,      // 【关键修改】头部固定高度
+                    top: 40,      // 头部固定高度
                     containLabel: true
                 },
                 xAxis: [
@@ -973,6 +985,7 @@
                         name: '存量',
                         position: 'top',
                         min: 0,
+                        max: oiLimit,
                         splitLine: { show: true, lineStyle: { color: '#eee' } },
                         axisLabel: { color: '#333' }
                     },
@@ -1019,7 +1032,7 @@
                 ]
             };
 
-         
+
             // 渲染图表
             callChart.setOption(callOption, true);
             putChart.setOption(putOption, true);
@@ -1104,13 +1117,13 @@
             //     callChart.resize({ width: chartWidth, height: chartHeight });
             //     putChart.resize({ width: chartWidth, height: chartHeight });
             // }, 100);
-            
+
             setTimeout(() => {
                 const wrapper = document.querySelector('.chart-wrapper');
                 if (wrapper) {
                     const chartWidth = wrapper.clientWidth;
 
-                    // 【关键修改】
+                    // 
                     // 之前是 * 25，现在改成 * 10
                     // 这会让行与行之间非常紧凑，大约是之前的 1/2.5
                     const autoHeight = Math.max(500, data.length * 10);
